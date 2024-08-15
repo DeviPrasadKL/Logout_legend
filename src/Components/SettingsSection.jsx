@@ -1,7 +1,21 @@
 import React from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, Stack, Typography, Switch } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, Stack } from '@mui/material';
 import ThemeSwitcher from '../UIComponents/ThemeSwitcher';
 
+/**
+ * `LoginHoursSettings` is a functional React component that renders a dialog for configuring login hours.
+ * 
+ * @param {Object} props - The component props.
+ * @param {Function} props.setLoginHoursDialogOpen - Function to set the state of the login hours dialog's open/closed status.
+ * @param {boolean} props.loginHoursDialogOpen - Boolean indicating if the login hours dialog is open.
+ * @param {Object} props.loginHours - Object containing the login hours for weekdays and Saturdays.
+ * @param {Function} props.handleLoginHoursSave - Function to handle saving the login hours settings.
+ * @param {Function} props.handleLoginHoursChange - Function to handle changes to the login hours input fields.
+ * @param {boolean} props.darkMode - Boolean indicating if dark mode is enabled.
+ * @param {Function} props.handleThemeToggle - Function to toggle between light and dark modes.
+ * 
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function LoginHoursSettings({
     setLoginHoursDialogOpen,
     loginHoursDialogOpen,
@@ -46,14 +60,16 @@ export default function LoginHoursSettings({
                         spacing={2}
                         sx={{
                             marginBottom: '0.6rem',
-                            marginTop:'1rem'
+                            marginTop: '1rem'
                         }}
                     >
+                        {/* ThemeSwitcher component allows toggling between dark and light themes */}
                         <ThemeSwitcher
                             darkMode={darkMode}
                             handleThemeToggle={handleThemeToggle}
                         />
                     </Stack>
+                    {/* TextField for entering weekday login hours */}
                     <TextField
                         label="Weekday Hours"
                         type="number"
@@ -77,6 +93,7 @@ export default function LoginHoursSettings({
                             },
                         }}
                     />
+                    {/* TextField for entering Saturday login hours */}
                     <TextField
                         label="Saturday Hours"
                         type="number"
@@ -102,7 +119,9 @@ export default function LoginHoursSettings({
                     />
                 </DialogContent>
                 <DialogActions>
+                    {/* Button to close the dialog without saving changes */}
                     <Button onClick={() => setLoginHoursDialogOpen(false)} color="secondary">Cancel</Button>
+                    {/* Button to save the changes made to login hours */}
                     <Button onClick={handleLoginHoursSave} color="primary">Save</Button>
                 </DialogActions>
             </Dialog>

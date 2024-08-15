@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton, Box } from '@mui/material';
+import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import LoginHoursSettings from './LoginHoursSettings';
-import CloseConfirm from './CloseConfirm';
+import SettingsSection from './SettingsSection';
+import CloseConfirm from '../UIComponents/ConfirmationDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutAndCalculate from './LogoutAndCalculate';
 
-function Logout({ darkMode, handleThemeToggle }) {
+/**
+ * A component for which renders all the other main componennts inside with all the logic.
+ * @param {boolean} darkMode - Indicates whether dark mode is currently enabled.
+ * @param {Function} handleThemeToggle - Function to toggle the theme mode.
+ */
+export default function Logout({ darkMode, handleThemeToggle }) {
     const [loginTime, setLoginTime] = useState(null);
     const [expectedLogoutTime, setExpectedLogoutTime] = useState(null);
     const [breakStart, setBreakStart] = useState(null);
@@ -17,8 +23,10 @@ function Logout({ darkMode, handleThemeToggle }) {
     const [manualBreakDuration, setManualBreakDuration] = useState('');
     const [loginHoursDialogOpen, setLoginHoursDialogOpen] = useState(false);
     const [loginHours, setLoginHours] = useState({ weekday: 8, saturday: 5 });
-    const timerRef = useRef(null);
     const [breakStartedAt, setBreakStartedAt] = useState(null);
+    const [isLoggedOut, setIsLoggedOut] = useState(false);
+    const [logoutTime, setLogoutTime] = useState(null);
+    const timerRef = useRef(null);
 
     useEffect(() => {
         // Load saved data from localStorage on component mount
@@ -27,6 +35,7 @@ function Logout({ darkMode, handleThemeToggle }) {
         const savedExpectedLogoutTime = localStorage.getItem('expectedLogoutTime');
         const savedLoginHours = JSON.parse(localStorage.getItem('loginHours')) || { weekday: 8, saturday: 5 };
         const breakExists = localStorage.getItem('breakStartTime');
+        const savedLogoutTime = localStorage.getItem('logoutTime');
 
         if (breakExists) {
             setBreakStartedAt(breakExists);
@@ -53,6 +62,15 @@ function Logout({ darkMode, handleThemeToggle }) {
 
         updateTotalBreakDuration(formattedBreaks);
         setLoginHours(savedLoginHours);
+
+        if (savedLogoutTime) {
+            // If logout time exists in localStorage, set it and mark as logged out
+            setLogoutTime(new Date(savedLogoutTime));
+            setIsLoggedOut(true);
+        } else {
+            setIsLoggedOut(false);
+            setLogoutTime(null)
+        }
     }, []);
 
     useEffect(() => {
@@ -115,6 +133,8 @@ function Logout({ darkMode, handleThemeToggle }) {
         setLoginTime(now);
         localStorage.setItem('loginTime', now.toISOString());
         updateExpectedLogoutTime(now);
+        setIsLoggedOut(false);
+        setLogoutTime(null)
     };
 
     /** 
@@ -193,6 +213,8 @@ function Logout({ darkMode, handleThemeToggle }) {
             setLoginTime(null);
             setExpectedLogoutTime(null);
             setBreaks([]);
+            setIsLoggedOut(false);
+            setOpenDialog(false);
         }
         setOpenDialog(false);
     };
@@ -373,9 +395,17 @@ function Logout({ darkMode, handleThemeToggle }) {
             )}
 
             <Stack p={2} justifyContent='center' alignItems='center'>
-                <Button variant="contained" color='success' onClick={handleLogin} sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} disabled={!!loginTime}>Login</Button>
-                <Button sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" onClick={handleBreakStart} disabled={!loginTime || isBreakInProgress}>Break Start</Button>
-                <Button sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" color='error' onClick={handleBreakEnd} disabled={!isBreakInProgress}>Break End</Button>
+                {/* Show the clear data button when user is logged out */}
+                {isLoggedOut ?
+                    <Button sx={{ height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" color='secondary' onClick={handleClearData} disabled={!isLoggedOut}>Clear Data</Button>
+                    :
+                    <>
+                        {/* else show Login, break start and break end buttons */}
+                        <Button variant="contained" color='success' onClick={handleLogin} sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} disabled={!!loginTime}>Login</Button>
+                        <Button sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" onClick={handleBreakStart} disabled={!loginTime || isBreakInProgress || isLoggedOut}>Break Start</Button>
+                        <Button sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" color='error' onClick={handleBreakEnd} disabled={!isBreakInProgress}>Break End</Button>
+                    </>
+                }
             </Stack>
 
             {isBreakInProgress && (
@@ -422,7 +452,7 @@ function Logout({ darkMode, handleThemeToggle }) {
                 </TableContainer>
             )}
 
-            {loginTime && (
+            {loginTime && !isBreakInProgress && (
                 <Stack direction="row" spacing={2} style={{ marginTop: 20 }}>
                     <TextField
                         label="Add Break Time (minutes)"
@@ -442,14 +472,24 @@ function Logout({ darkMode, handleThemeToggle }) {
 
             {loginTime &&
                 <Stack pb={2}>
-                    <Button variant="outlined" color="error" onClick={handleClearData} style={{ marginTop: 20 }}>
-                        Clear Data
-                    </Button>
+                    {!isBreakInProgress &&
+                        <LogoutAndCalculate
+                            loginTime={loginTime}
+                            expectedLogoutTime={expectedLogoutTime}
+                            breaks={breaks}
+                            darkMode={darkMode}
+                            logoutTime={logoutTime}
+                            formatDate={formatDate}
+                            isLoggedOut={isLoggedOut}
+                            setLogoutTime={setLogoutTime}
+                            setIsLoggedOut={setIsLoggedOut}
+                        />
+                    }
                 </Stack>
             }
 
             {/* Login Settings */}
-            <LoginHoursSettings
+            <SettingsSection
                 setLoginHoursDialogOpen={setLoginHoursDialogOpen}
                 loginHoursDialogOpen={loginHoursDialogOpen}
                 loginHours={loginHours}
@@ -464,9 +504,11 @@ function Logout({ darkMode, handleThemeToggle }) {
                 openDialog={openDialog}
                 setOpenDialog={setOpenDialog}
                 handleDialogClose={handleDialogClose}
+                title='Clear Data'
+                content="Are you sure you want to clear all data?"
+                no='No'
+                yes='Yes'
             />
         </Container>
     );
 }
-
-export default Logout;

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material"
-import ThemeChanger from "./Components/ThemeChanger"
+import ThemeChanger from '../src/Theme/ThemeChanger'
 
 function App() {
 

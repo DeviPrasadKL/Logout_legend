@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, createTheme, ThemeProvider, useTheme } from '@mui/material';
-import Logout from './Logout';
+import Logout from '../Components/Logout';
 
 /**
  * The `ThemeChanger` component manages and applies theme settings for the application.
