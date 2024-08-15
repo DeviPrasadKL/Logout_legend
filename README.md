@@ -26,7 +26,7 @@
 
 ## Getting Started
 
-1. **Install the App:** Click on [this link](https://logout-legend.onrender.com) to install the Progressive Web App. It’s lightweight and can be easily added to your mobile home screen.
+1. **Install the App:** Click on <a href="https://logout-legend.onrender.com" target="_blank">this link</a> to install the Progressive Web App. It’s lightweight and can be easily added to your mobile home screen.
 2. **Set Up Your Preferences:** Customize your settings including break reminders and mode preferences.
 3. **Start Using:** Begin your workday and let Logout Legend handle the time tracking and break management.
 
