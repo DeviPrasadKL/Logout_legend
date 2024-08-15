@@ -6,7 +6,7 @@ import { Stack, Typography, Switch } from '@mui/material';
  * @param {boolean} darkMode - Indicates whether dark mode is currently enabled.
  * @param {Function} handleThemeToggle - Function to toggle the theme mode.
  */
-const ThemeSwitcher = ({ darkMode, handleThemeToggle }) => {
+export default function ThemeSwitcher({ darkMode, handleThemeToggle }) {
     return (
         <Stack
             direction="row"
@@ -60,5 +60,3 @@ const ThemeSwitcher = ({ darkMode, handleThemeToggle }) => {
         </Stack>
     );
 };
-
-export default ThemeSwitcher;
