@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Alert } from '@mui/material';
 
-// Utility function to format a date object to 'YYYY-MM-DD' string
 /**
  * Formats a date object to a string in 'YYYY-MM-DD' format.
  * @param {Date} date - The date object to format.
@@ -12,7 +11,6 @@ const formatDate = (date) => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-// Utility function to get the start and end dates of a 5-day range
 /**
  * Gets the start and end dates of a 5-day range ending today.
  * @returns {Object} - An object containing the startDate and endDate.
@@ -24,7 +22,6 @@ const getDateRange = () => {
     return { startDate: fiveDaysAgo, endDate: today };
 };
 
-// Utility function to format seconds into hh:mm:ss
 /**
  * Formats a given number of seconds into a string in 'hh:mm:ss' format.
  * @param {number} seconds - The total number of seconds to format.
@@ -37,13 +34,30 @@ const formatTime = (seconds) => {
     return [hrs, mins, secs].map(val => String(val).padStart(2, '0')).join(':');
 };
 
+/**
+ * Formats a date object to a string in 'hh:mm:ss am/pm' format.
+ * @param {Date} date - The date object to format.
+ * @returns {string} - The formatted time string.
+ */
+const formatTime12Hour = (date) => {
+    return new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    }).format(date);
+};
+
 export default function RecordsViewer() {
     const [records, setRecords] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    // Effect hook to load records from localStorage when the component mounts
+    /**
+     * Effect hook to load records from localStorage when the component mounts.
+     * Sets the state with the loaded records or an empty array if no records are found.
+     */
     useEffect(() => {
         const loadedRecords = JSON.parse(localStorage.getItem('records')) || [];
         setRecords(loadedRecords);
@@ -51,7 +65,7 @@ export default function RecordsViewer() {
 
     /**
      * Handles navigation between dates by updating the currentDate state.
-     * Shows a snackbar message if the navigation is out of bounds.
+     * Displays a snackbar message if the navigation is out of bounds.
      * @param {string} direction - The direction to navigate ('next' or 'prev').
      */
     const navigate = (direction) => {
@@ -77,9 +91,9 @@ export default function RecordsViewer() {
     };
 
     /**
-     * Funtion to show current weekday and date on top
-     * @param {Date} date - Login time
-     * @returns {String} - Weekday day/month 
+     * Formats the date to display the weekday, day, and month in a readable format.
+     * @param {Date} date - The date to format.
+     * @returns {string} - The formatted date string.
      */
     function formatDateToShow(date) {
         const weekdayOptions = { weekday: 'short' };
@@ -114,9 +128,9 @@ export default function RecordsViewer() {
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell>{new Date(record.loginTime).toLocaleTimeString()}</TableCell>
-                                    <TableCell>{record.expectedLogoutTime ? new Date(record.expectedLogoutTime).toLocaleTimeString() : 'N/A'}</TableCell>
-                                    <TableCell>{record.logoutTime ? new Date(record.logoutTime).toLocaleTimeString() : 'N/A'}</TableCell>
+                                    <TableCell>{formatTime12Hour(new Date(record.loginTime))}</TableCell>
+                                    <TableCell>{record.expectedLogoutTime ? formatTime12Hour(new Date(record.expectedLogoutTime)) : 'N/A'}</TableCell>
+                                    <TableCell>{record.logoutTime ? formatTime12Hour(new Date(record.logoutTime)) : 'N/A'}</TableCell>
                                     <TableCell>{formatTime(record.totalLoggedInTime)}</TableCell>
                                 </TableRow>
                             </TableBody>
@@ -136,8 +150,8 @@ export default function RecordsViewer() {
                                 <TableBody>
                                     {record.breaks.map((b, i) => (
                                         <TableRow key={i}>
-                                            <TableCell>{new Date(b.start).toLocaleTimeString()}</TableCell>
-                                            <TableCell>{new Date(b.end).toLocaleTimeString()}</TableCell>
+                                            <TableCell>{formatTime12Hour(new Date(b.start))}</TableCell>
+                                            <TableCell>{formatTime12Hour(new Date(b.end))}</TableCell>
                                             <TableCell>{b.duration}</TableCell>
                                         </TableRow>
                                     ))}
