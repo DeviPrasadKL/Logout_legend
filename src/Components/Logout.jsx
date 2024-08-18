@@ -436,7 +436,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     return (
         <Container>
 
-            <Stack flexDirection='row' justifyContent='space-between' alignItems='baseline' pt={2}>
+            <Stack flexDirection='row' justifyContent='space-between' alignItems='baseline'>
                 <Typography variant="h5" gutterBottom>
                     {loginTime ? `${formatDate(loginTime)}` : 'No login time recorded'}
                 </Typography>
