@@ -220,7 +220,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         if (loginTime) {
             // Calculate total logged in time in seconds
             const totalLoggedInTime = (new Date().getTime() - loginTime.getTime()) / 1000;
-            const currentDate = new Date().toISOString().split('T')[0]; // Save date in YYYY-MM-DD format
+            const currentDate = new Date(loginTime).toISOString().split('T')[0]; // Save date in YYYY-MM-DD format
 
             // Create a new record object
             const newRecord = {
