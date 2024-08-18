@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, createTheme, ThemeProvider, useTheme } from '@mui/material';
 import Logout from '../Components/Logout';
+import Navbar from '../UIComponents/Navbar';
+import Sidebar from '../UIComponents/Sidebar';
+import { Route, Routes } from 'react-router-dom';
+import RecordsViewer from '../Components/RecordsViewer';
+
 
 /**
  * The `ThemeChanger` component manages and applies theme settings for the application.
@@ -19,6 +24,15 @@ export default function ThemeChanger() {
 
     // State variable to keep track of the current theme mode
     const [darkMode, setDarkMode] = useState(getInitialMode);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const handleMenuClick = () => {
+        setSidebarOpen(true);
+    };
+
+    const handleSidebarClose = () => {
+        setSidebarOpen(false);
+    };
 
     const theme = createTheme({
         palette: {
@@ -63,10 +77,17 @@ export default function ThemeChanger() {
                     gap: 2,
                 }}
             >
-                <Logout
-                    darkMode={darkMode}
-                    handleThemeToggle={handleThemeToggle}
-                />
+                <Navbar onMenuClick={handleMenuClick} />
+                <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
+
+                <Routes>
+                    <Route exact path="/Logout_legend" element={<Logout
+                        darkMode={darkMode}
+                        handleThemeToggle={handleThemeToggle}
+                    />} />
+                    <Route path="/view_history" element={<RecordsViewer />} />
+                </Routes>
+
             </Box>
         </ThemeProvider>
     );

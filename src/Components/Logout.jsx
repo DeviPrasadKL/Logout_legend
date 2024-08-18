@@ -5,6 +5,7 @@ import SettingsSection from './SettingsSection';
 import CloseConfirm from '../UIComponents/ConfirmationDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutAndCalculate from './LogoutAndCalculate';
+import RecordsViewer from './RecordsViewer';
 
 /**
  * A component for which renders all the other main componennts inside with all the logic.
@@ -36,6 +37,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         const savedLoginHours = JSON.parse(localStorage.getItem('loginHours')) || { weekday: 8, saturday: 5 };
         const breakExists = localStorage.getItem('breakStartTime');
         const savedLogoutTime = localStorage.getItem('logoutTime');
+
+        // Call removeOldRecords function to clean up old records
+        removeOldRecords();
 
         if (breakExists) {
             setBreakStartedAt(breakExists);
@@ -69,7 +73,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             setIsLoggedOut(true);
         } else {
             setIsLoggedOut(false);
-            setLogoutTime(null)
+            setLogoutTime(null);
         }
     }, []);
 
@@ -88,6 +92,23 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
         return () => clearInterval(timerRef.current);
     }, [isBreakInProgress]);
+
+    /**
+     * Function to remove records older than 5 days
+     */
+    const removeOldRecords = () => {
+        const now = new Date();
+        const cutoffDate = new Date(now.setDate(now.getDate() - 5)).toISOString().split('T')[0]; // Date 5 days ago
+
+        // Retrieve existing records from localStorage
+        const existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+
+        // Filter out records older than 5 days
+        const updatedRecords = existingRecords.filter(record => record.date >= cutoffDate);
+
+        // Save the updated records back to localStorage
+        localStorage.setItem('records', JSON.stringify(updatedRecords));
+    };
 
     /**
      * Updates the expected logout time based on login time and login hours.
@@ -192,29 +213,66 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
     /**
      * Clears all user data from localStorage except theme mode and login hours.
+     * Also adds a record with the total break time.
+     */
+    const clearDataAndAddRecords = () => {
+        // Store current data before clearing
+        if (loginTime) {
+            // Calculate total logged in time in seconds
+            const totalLoggedInTime = (new Date().getTime() - loginTime.getTime()) / 1000;
+            const currentDate = new Date().toISOString().split('T')[0]; // Save date in YYYY-MM-DD format
+
+            // Create a new record object
+            const newRecord = {
+                date: currentDate,
+                loginTime: loginTime.toISOString(),
+                expectedLogoutTime: expectedLogoutTime?.toISOString() || null,
+                breaks: breaks,
+                logoutTime: logoutTime || null,
+                totalLoggedInTime: Math.floor(totalLoggedInTime), // Total logged in time in seconds
+                totalBreakTime: calculateTotalBreakDuration() // Total break time
+            };
+
+            // Retrieve existing records from localStorage
+            const existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+
+            // Check if a record for the current date already exists
+            const existingRecordIndex = existingRecords.findIndex(record => record.date === currentDate);
+
+            if (existingRecordIndex >= 0) {
+                // Replace existing record
+                existingRecords[existingRecordIndex] = newRecord;
+            } else {
+                // Add new record
+                existingRecords.push(newRecord);
+            }
+
+            // Save the updated records to localStorage
+            localStorage.setItem('records', JSON.stringify(existingRecords));
+        }
+
+        // Clear current data
+        setLoginTime(null);
+        setExpectedLogoutTime(null);
+        setBreaks([]);
+        setIsLoggedOut(false);
+        setLogoutTime(null);
+
+        // Clear relevant items from localStorage
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('breaks');
+        localStorage.removeItem('breakStartTime');
+        localStorage.removeItem('expectedLogoutTime');
+        localStorage.removeItem('logoutTime');
+    };
+
+    /**
+     * Clears all user data from localStorage except theme mode and login hours.
      * @param {boolean} confirm - Whether the user confirmed the data clearing action.
      */
     const handleDialogClose = (confirm) => {
         if (confirm) {
-            const themeMode = localStorage.getItem('themeMode');
-
-            const savedLoginHours = localStorage.getItem('loginHours');
-
-            localStorage.clear();
-
-            if (themeMode) {
-                localStorage.setItem('themeMode', themeMode);
-            }
-
-            if (savedLoginHours) {
-                localStorage.setItem('loginHours', savedLoginHours);
-            }
-
-            setLoginTime(null);
-            setExpectedLogoutTime(null);
-            setBreaks([]);
-            setIsLoggedOut(false);
-            setOpenDialog(false);
+            clearDataAndAddRecords();
         }
         setOpenDialog(false);
     };
