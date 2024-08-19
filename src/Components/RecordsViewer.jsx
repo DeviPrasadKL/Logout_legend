@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Alert } from '@mui/material';
+import { Container, Typography, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Alert, IconButton } from '@mui/material';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import DownloadIcon from '@mui/icons-material/Download';
+// import ArrowForwardIosIcon from '@mui/icons-material/ChevronRight';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+// import ArrowBackIosNewIcon from '@mui/icons-material/KeyboardArrowLeft';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 /**
  * Formats a date object to a string in 'YYYY-MM-DD' format.
@@ -111,6 +118,48 @@ export default function RecordsViewer() {
     const dateKey = formatDate(currentDate);
     const record = records.find(record => record.date === dateKey);
 
+    /**
+     * Generates and triggers a download of the records report in XLSX format.
+     */
+    const handleDownload = () => {
+        const wb = XLSX.utils.book_new();
+
+        const data = [
+            ["Date", "Login Time", "Expected Logout Time", "Logout Time", "Total Logged In Time", "Total Break Time"],
+            [dateKey,
+                record ? formatTime12Hour(new Date(record.loginTime)) : 'N/A',
+                record ? (record.expectedLogoutTime ? formatTime12Hour(new Date(record.expectedLogoutTime)) : 'N/A') : 'N/A',
+                record ? (record.logoutTime ? formatTime12Hour(new Date(record.logoutTime)) : 'N/A') : 'N/A',
+                record ? record.totalLoggedInTime : 'N/A',
+                record ? record.totalBreakTime : 'N/A']
+        ];
+
+        const breaksData = record ? record.breaks.map(b => [
+            formatTime12Hour(new Date(b.start)),
+            formatTime12Hour(new Date(b.end)),
+            b.duration
+        ]) : [];
+
+        const breaksSheet = [["Break Start Time", "Break End Time", "Break Duration"], ...breaksData];
+        data.push([""]); // Adding empty row
+        data.push(["Breaks Table"]);
+        data.push(...breaksSheet);
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+        // Generate file name with date, time, and random numbers
+        const now = new Date();
+        const formattedDate = formatDate(now);
+        const formattedTime = formatTime12Hour(now).replace(/:/g, '-'); // Replace colons for file compatibility
+        const randomNumbers = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+        const fileName = `Login_Tracker_${formattedDate}_${formattedTime}_${randomNumbers}.xlsx`;
+
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), fileName);
+    };
+
+
     return (
         <Container>
             <Typography variant="h6">Records for {formatDateToShow(currentDate)}</Typography>
@@ -131,7 +180,7 @@ export default function RecordsViewer() {
                                     <TableCell>{formatTime12Hour(new Date(record.loginTime))}</TableCell>
                                     <TableCell>{record.expectedLogoutTime ? formatTime12Hour(new Date(record.expectedLogoutTime)) : 'N/A'}</TableCell>
                                     <TableCell>{record.logoutTime ? formatTime12Hour(new Date(record.logoutTime)) : 'N/A'}</TableCell>
-                                    <TableCell>{formatTime(record.totalLoggedInTime)}</TableCell>
+                                    <TableCell>{record.totalLoggedInTime}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -163,17 +212,30 @@ export default function RecordsViewer() {
                             </Table>
                         </TableContainer>
                     )}
+
+
+                    {/* <Button variant="contained" color="primary"  style={{ marginTop: 20 }}>
+                        Download Report
+                    </Button> */}
                 </>
             ) : (
                 <Typography>No records available for this date.</Typography>
             )}
-            <Stack direction="row" spacing={2} mt={2}>
-                <Button variant="contained" onClick={() => navigate('prev')}>
-                    Previous
-                </Button>
-                <Button variant="contained" onClick={() => navigate('next')}>
-                    Next
-                </Button>
+            <Stack direction="row" justifyContent='space-around' spacing={2} mt={2}>
+                <IconButton aria-label="Previous" onClick={() => navigate('prev')}>
+                    <ArrowBackIosNewIcon />
+                </IconButton>
+
+                {/* Download Button */}
+                {record &&
+                    <IconButton aria-label="Download" onClick={handleDownload}>
+                        <DownloadIcon />
+                    </IconButton>
+                }
+
+                <IconButton aria-label="Next" variant='contained' onClick={() => navigate('next')}>
+                    <ArrowForwardIosIcon />
+                </IconButton>
             </Stack>
 
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>

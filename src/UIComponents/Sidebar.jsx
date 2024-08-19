@@ -25,7 +25,7 @@ const Sidebar = ({ open, onClose }) => {
       PaperProps={{ sx: { width: '40%' } }} // Set width of the Drawer Paper component
     >
       <List>
-        <ListItem button onClick={() => { navigateTo('/') }}>
+        <ListItem button onClick={() => { navigateTo('/Logout_legend') }}>
           <ListItemText primary="Home" />
         </ListItem>
         <Divider />

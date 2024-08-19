@@ -3,6 +3,7 @@ import { Button, Stack, Typography, } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ConfirmationDialog from '../UIComponents/ConfirmationDialog';
+import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
 
 /**
  * `LogoutAndCalculate` component handles user logout, calculates logged-in duration, 
@@ -27,41 +28,11 @@ export default function LogoutAndCalculate({
     logoutTime,
     setLogoutTime
 }) {
-    // State to store total logged-in hours
-    const [totalLoggedInHours, setTotalLoggedInHours] = useState('N/A');
-
     // State to control the logout confirmation dialog visibility
     const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
-    /**
-     * Calculates the total logged-in duration, accounting for breaks.
-     * This effect runs whenever loginTime, logoutTime, or breaks change.
-     */
-    useEffect(() => {
-        if (loginTime && logoutTime) {
-            const loginDate = new Date(loginTime);
-            const logoutDate = new Date(logoutTime);
-
-            // Calculate total duration between login and logout
-            const totalDuration = logoutDate - loginDate;
-
-            // Calculate total break duration
-            const totalBreakDurationMs = breaks.reduce((acc, b) => {
-                const [minutes, seconds] = b.duration.split('m').map(part => parseInt(part, 10));
-                const durationInMs = (minutes || 0) * 60 * 1000 + (seconds || 0) * 1000;
-                return acc + durationInMs;
-            }, 0);
-
-            // Subtract break duration from total duration to get logged-in time
-            const totalLoggedInMs = totalDuration - totalBreakDurationMs;
-            const totalHours = Math.floor(totalLoggedInMs / (1000 * 60 * 60));
-            const totalMinutes = Math.floor((totalLoggedInMs % (1000 * 60 * 60)) / (1000 * 60));
-            const totalSeconds = Math.floor((totalLoggedInMs % (1000 * 60)) / 1000);
-
-            // Set formatted total logged-in hours
-            setTotalLoggedInHours(`${totalHours}h ${totalMinutes}m ${totalSeconds}s`);
-        }
-    }, [loginTime, logoutTime, breaks]);
+    //Hook to get Total Logged in hours without breaks
+    const {totalLoggedInHours} = useTotalLoggedInHours(loginTime, logoutTime, breaks);
 
     /**
      * Opens the logout confirmation dialog.
@@ -83,47 +54,6 @@ export default function LogoutAndCalculate({
             setOpenLogoutDialog(false); // Close dialog after confirmation
         }
         setOpenLogoutDialog(false); // Close dialog after confirmation
-    };
-
-    /**
-     * Generates and triggers a download of the login and breaks report in XLSX format.
-     */
-    const handleDownload = () => {
-        const wb = XLSX.utils.book_new();
-
-        // Data for the first sheet
-        const data = [
-            ["Date", "Login Time", "Expected Logout Time", "Logout Time", "Total Break Duration", "Total Logged In Hours"],
-            [
-                formatDate(),
-                loginTime ? new Date(loginTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) : 'N/A',
-                expectedLogoutTime ? new Date(expectedLogoutTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) : 'N/A',
-                logoutTime ? new Date(logoutTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) : 'N/A',
-                calculateTotalBreakDuration(),
-                totalLoggedInHours
-            ]
-        ];
-
-        // Create breaks data
-        const breaksData = breaks.map(b => [
-            new Date(b.start).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
-            new Date(b.end).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
-            b.duration
-        ]);
-
-        // Add breaks data to the data array
-        const breaksSheet = [["Break Start", "Break End", "Break Duration"], ...breaksData];
-        data.push([""]); // Adding empty row
-        data.push(["Breaks Table"]);
-        data.push(...breaksSheet);
-
-        // Convert data to worksheet
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, 'Report');
-
-        // Write to file and trigger download
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'LoginBreaksReport.xlsx');
     };
 
     /**
@@ -178,18 +108,6 @@ export default function LogoutAndCalculate({
                     Total Logged In Hours: {totalLoggedInHours}
                 </Typography>
             )}
-
-            {/* Button to download the report if user is logged out */}
-            {isLoggedOut &&
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleDownload}
-                    style={{ marginTop: 20 }}
-                >
-                    Download Report
-                </Button>
-            }
 
             {/* Confirmation Dialog for logout */}
             <ConfirmationDialog

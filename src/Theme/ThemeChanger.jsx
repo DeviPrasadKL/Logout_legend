@@ -74,7 +74,7 @@ export default function ThemeChanger() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 2,
+                    gap: 1,
                 }}
             >
                 <Navbar onMenuClick={handleMenuClick} />

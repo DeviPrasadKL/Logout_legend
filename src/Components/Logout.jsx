@@ -6,6 +6,9 @@ import CloseConfirm from '../UIComponents/ConfirmationDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutAndCalculate from './LogoutAndCalculate';
 import RecordsViewer from './RecordsViewer';
+import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 
 /**
  * A component for which renders all the other main componennts inside with all the logic.
@@ -27,6 +30,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     const [breakStartedAt, setBreakStartedAt] = useState(null);
     const [isLoggedOut, setIsLoggedOut] = useState(false);
     const [logoutTime, setLogoutTime] = useState(null);
+    const [isEditingLoginTime, setIsEditingLoginTime] = useState(false);
+    const [editedLoginTime, setEditedLoginTime] = useState('');
+
     const timerRef = useRef(null);
 
     useEffect(() => {
@@ -92,6 +98,16 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
         return () => clearInterval(timerRef.current);
     }, [isBreakInProgress]);
+
+    useEffect(() => {
+        if (loginTime) {
+            setEditedLoginTime(loginTime.toTimeString().substr(0, 5)); // Format to HH:mm
+        }
+    }, [loginTime]);
+
+
+    //Hook to get Total Logged in hours without breaks
+    const { totalLoggedInHours } = useTotalLoggedInHours(loginTime, logoutTime, breaks);
 
     /**
      * Function to remove records older than 5 days
@@ -229,7 +245,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 expectedLogoutTime: expectedLogoutTime?.toISOString() || null,
                 breaks: breaks,
                 logoutTime: logoutTime || null,
-                totalLoggedInTime: Math.floor(totalLoggedInTime), // Total logged in time in seconds
+                totalLoggedInTime: totalLoggedInHours, // Total logged in time in seconds
                 totalBreakTime: calculateTotalBreakDuration() // Total break time
             };
 
@@ -433,6 +449,23 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const handleTimeSave = () => {
+        const [hours, minutes] = editedLoginTime.split(':').map(Number);
+        const updatedLoginTime = new Date(loginTime);
+        updatedLoginTime.setHours(hours, minutes);
+
+        setLoginTime(updatedLoginTime);
+        localStorage.setItem('loginTime', updatedLoginTime.toISOString());
+        setIsEditingLoginTime(false);
+        updateExpectedLogoutTime(updatedLoginTime);
+    };
+
+    const handleTimeChange = (event) => {
+        setEditedLoginTime(event.target.value);
+    };
+
+    const showAddBreakManually = loginTime && !isBreakInProgress && !isLoggedOut;
+
     return (
         <Container>
 
@@ -446,8 +479,34 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             </Stack>
 
             {loginTime && (
+                <Stack direction="row" alignItems="center" justifyContent='space-between'>
+                    {isEditingLoginTime ? (
+                        <>
+                            <input
+                                type="time"
+                                value={editedLoginTime}
+                                onChange={handleTimeChange}
+                            />
+                            <IconButton onClick={handleTimeSave} color='primary'>
+                                <SaveIcon />
+                            </IconButton>
+                        </>
+                    ) : (
+                        <>
+                            <Typography variant="body1">
+                                Logged In: {loginTime.toLocaleTimeString('en-US', timeOptions)}
+                            </Typography>
+                            <IconButton onClick={() => setIsEditingLoginTime(true)} color='secondary'>
+                                <EditIcon />
+                            </IconButton>
+                        </>
+                    )}
+                </Stack>
+            )}
+
+            {loginTime && (
                 <Typography variant="p">
-                    Logged In:- {loginTime.toLocaleTimeString('en-US', timeOptions)}<br />
+                    {/* Logged In:- {loginTime.toLocaleTimeString('en-US', timeOptions)}<br /> */}
                     Expected Logout:- {expectedLogoutTime?.toLocaleTimeString('en-US', timeOptions)}
                 </Typography>
             )}
@@ -455,13 +514,13 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             <Stack p={2} justifyContent='center' alignItems='center'>
                 {/* Show the clear data button when user is logged out */}
                 {isLoggedOut ?
-                    <Button sx={{ height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" color='secondary' onClick={handleClearData} disabled={!isLoggedOut}>Clear Data</Button>
+                    <Button sx={{ height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" color='secondary' onClick={handleClearData} disabled={!isLoggedOut}>Clear Data</Button>
                     :
                     <>
                         {/* else show Login, break start and break end buttons */}
-                        <Button variant="contained" color='success' onClick={handleLogin} sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} disabled={!!loginTime}>Login</Button>
-                        <Button sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" onClick={handleBreakStart} disabled={!loginTime || isBreakInProgress || isLoggedOut}>Break Start</Button>
-                        <Button sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '50%' }} variant="contained" color='error' onClick={handleBreakEnd} disabled={!isBreakInProgress}>Break End</Button>
+                        <Button variant="contained" color='success' onClick={handleLogin} sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} disabled={!!loginTime}>Login</Button>
+                        <Button sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" onClick={handleBreakStart} disabled={!loginTime || isBreakInProgress || isLoggedOut}>Break Start</Button>
+                        <Button sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" color='error' onClick={handleBreakEnd} disabled={!isBreakInProgress}>Break End</Button>
                     </>
                 }
             </Stack>
@@ -510,7 +569,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 </TableContainer>
             )}
 
-            {loginTime && !isBreakInProgress && (
+            {showAddBreakManually && (
                 <Stack direction="row" spacing={2} style={{ marginTop: 20 }}>
                     <TextField
                         label="Add Break Time (minutes)"
