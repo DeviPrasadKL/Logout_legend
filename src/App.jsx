@@ -1,5 +1,7 @@
 import { Box } from "@mui/material"
-import ThemeChanger from '../src/Theme/ThemeChanger'
+import { lazy } from "react"
+import Loadable from "./Components/Lodable";
+const ThemeChanger = Loadable(lazy(()=> import('../src/Theme/ThemeChanger')));
 
 function App() {
 

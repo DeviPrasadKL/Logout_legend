@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy } from 'react';
+//Lazy loading
+import Loadable from './Lodable';
+const SettingsSection = Loadable(lazy(()=> import('./SettingsSection')));
+const CloseConfirm = Loadable(lazy(()=> import('../UIComponents/ConfirmationDialog')));
+const LogoutAndCalculate = Loadable(lazy(()=> import('./LogoutAndCalculate')));
+
 import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SettingsSection from './SettingsSection';
-import CloseConfirm from '../UIComponents/ConfirmationDialog';
 import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutAndCalculate from './LogoutAndCalculate';
-import RecordsViewer from './RecordsViewer';
 import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';

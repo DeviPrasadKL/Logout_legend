@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, Stack } from '@mui/material';
-import ThemeSwitcher from '../UIComponents/ThemeSwitcher';
+import Loadable from './Lodable';
+const ThemeSwitcher = Loadable(lazy(()=> import('../UIComponents/ThemeSwitcher')));
 
 /**
  * `LoginHoursSettings` is a functional React component that renders a dialog for configuring login hours.
