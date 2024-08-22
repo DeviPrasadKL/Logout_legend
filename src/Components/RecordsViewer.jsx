@@ -163,6 +163,24 @@ export default function RecordsViewer() {
     return (
         <Container>
             <Typography variant="h6">Records for {formatDateToShow(currentDate)}</Typography>
+
+            <Stack direction="row" justifyContent='space-between' spacing={2} m={1}>
+                <IconButton aria-label="Previous" onClick={() => navigate('prev')}>
+                    <ArrowBackIosNewIcon />
+                </IconButton>
+
+                {/* Download Button */}
+                {record &&
+                    <IconButton aria-label="Download" onClick={handleDownload}>
+                        <DownloadIcon />
+                    </IconButton>
+                }
+
+                <IconButton aria-label="Next" variant='contained' onClick={() => navigate('next')}>
+                    <ArrowForwardIosIcon />
+                </IconButton>
+            </Stack>
+
             {record ? (
                 <>
                     <TableContainer component={Paper} style={{ marginBottom: '16px' }}>
@@ -221,22 +239,6 @@ export default function RecordsViewer() {
             ) : (
                 <Typography>No records available for this date.</Typography>
             )}
-            <Stack direction="row" justifyContent='space-around' spacing={2} mt={2}>
-                <IconButton aria-label="Previous" onClick={() => navigate('prev')}>
-                    <ArrowBackIosNewIcon />
-                </IconButton>
-
-                {/* Download Button */}
-                {record &&
-                    <IconButton aria-label="Download" onClick={handleDownload}>
-                        <DownloadIcon />
-                    </IconButton>
-                }
-
-                <IconButton aria-label="Next" variant='contained' onClick={() => navigate('next')}>
-                    <ArrowForwardIosIcon />
-                </IconButton>
-            </Stack>
 
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
                 <Alert sx={{ width: '100%' }} onClose={() => setSnackbarOpen(false)} severity="warning">
