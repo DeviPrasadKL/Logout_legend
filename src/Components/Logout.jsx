@@ -426,11 +426,11 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
     /**
      * Helper function to check if a break can be deleted
-     * @param {Date} breakStartTime - Break start time of that row (breakRecord.start)
+     * @param {Date} breakEndTime - Break start time of that row (breakRecord.start)
      * @returns {Boolean} - Disable delete button o not
      */
-    const canDeleteBreak = (breakStartTime) => {
-        const breakStartDate = new Date(breakStartTime);
+    const canDeleteBreak = (breakEndTime) => {
+        const breakStartDate = new Date(breakEndTime);
         const now = new Date();
         const diffMinutes = (now - breakStartDate) / (1000 * 60);
         // Return true if less than or equal to 2 minutes
@@ -553,7 +553,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                                         <IconButton
                                             onClick={() => handleDeleteBreak(index)}
                                             color="error"
-                                            disabled={!canDeleteBreak(breakRecord.start)}
+                                            disabled={!canDeleteBreak(breakRecord.end)}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
