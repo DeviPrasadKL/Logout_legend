@@ -5,6 +5,7 @@ import Navbar from '../UIComponents/Navbar';
 import Sidebar from '../UIComponents/Sidebar';
 import { Route, Routes } from 'react-router-dom';
 import RecordsViewer from '../Components/RecordsViewer';
+import About from '../Components/About';
 
 
 /**
@@ -86,6 +87,7 @@ export default function ThemeChanger() {
                         handleThemeToggle={handleThemeToggle}
                     />} />
                     <Route path="/view_history" element={<RecordsViewer />} />
+                    <Route path="/about" element={<About />} />
                 </Routes>
 
             </Box>
