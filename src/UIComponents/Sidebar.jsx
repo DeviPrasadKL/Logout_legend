@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Box, List, ListItem, ListItemText, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ open, onClose }) => {
@@ -11,38 +11,57 @@ const Sidebar = ({ open, onClose }) => {
   };
 
   return (
-    <Drawer
-      anchor="left"
-      open={open}
-      onClose={onClose}
-      sx={{
-        width: '40%', // Default width for larger screens
-        flexShrink: 0,
-        '@media (max-width:600px)': {
-          width: '60%', // Adjust width for smaller screens if needed
-        }
-      }}
-      PaperProps={{ sx: { width: '40%' } }} // Set width of the Drawer Paper component
-    >
-      <List>
-        <ListItem button onClick={() => { navigateTo('/Logout_legend') }}>
-          <ListItemText primary="Home" />
-        </ListItem>
-        <Divider />
-        <ListItem button onClick={() => { navigateTo('/view_history') }}>
-          <ListItemText primary="View History" />
-        </ListItem>
-        <Divider />
-        {/* Uncomment and add additional ListItems as needed */}
-        {/* <ListItem button>
-          <ListItemText primary="About" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="How it Works" />
-        </ListItem> */}
-      </List>
-    </Drawer>
+    <>
+      {open && (
+        <Box
+          onClick={onClose}
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
+            zIndex: 1, // Ensure it's behind the sidebar but in front of other content
+          }}
+        />
+      )}
+      <Box
+        sx={{
+          width: '50%',
+          height: '100vh',
+          backgroundColor: 'background.paper',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          transition: 'transform 0.3s ease-in-out',
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
+          zIndex: 1300, // Make sure it's above the overlay
+          '@media (max-width:600px)': {
+            width: '70%',
+          }
+        }}
+      >
+        <List>
+          <ListItem button onClick={() => navigateTo('/Logout_legend')}>
+            <ListItemText primary="Home" />
+          </ListItem>
+          <Divider />
+          <ListItem button onClick={() => navigateTo('/view_history')}>
+            <ListItemText primary="View History" />
+          </ListItem>
+          <Divider />
+          {/* Uncomment and add additional ListItems as needed */}
+          {/* <ListItem button>
+            <ListItemText primary="About" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="How it Works" />
+          </ListItem> */}
+        </List>
+      </Box>
+    </>
   );
 };
 

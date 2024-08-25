@@ -496,7 +496,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                     ) : (
                         <>
                             <Typography variant="body1">
-                                Logged In: {loginTime.toLocaleTimeString('en-US', timeOptions)}
+                                Logged In:- {loginTime.toLocaleTimeString('en-US', timeOptions)}
                             </Typography>
                             <IconButton onClick={() => setIsEditingLoginTime(true)} color='secondary'>
                                 <EditIcon />
