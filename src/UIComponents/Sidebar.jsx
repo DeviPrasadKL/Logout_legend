@@ -21,8 +21,8 @@ const Sidebar = ({ open, onClose }) => {
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
-            zIndex: 1, // Ensure it's behind the sidebar but in front of other content
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 1,
           }}
         />
       )}
@@ -36,7 +36,7 @@ const Sidebar = ({ open, onClose }) => {
           left: 0,
           transition: 'transform 0.3s ease-in-out',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
-          zIndex: 1300, // Make sure it's above the overlay
+          zIndex: 2,
           '@media (max-width:600px)': {
             width: '70%',
           }
