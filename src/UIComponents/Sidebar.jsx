@@ -49,7 +49,7 @@ const Sidebar = ({ open, onClose }) => {
         <Box
           sx={{
             padding: '1.5rem',
-            backgroundColor: '#003366', // Professional dark blue color
+            background: 'linear-gradient(107deg, rgba(0,0,0,1) 0%, rgba(9,9,121,1) 30%, rgba(7,56,152,1) 53%, rgba(0,212,255,1) 100%)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
@@ -57,7 +57,15 @@ const Sidebar = ({ open, onClose }) => {
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Optional shadow for depth
           }}
         >
-          <Typography variant="h6">Login Tracker</Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: 'Roboto Slab, serif',
+              fontWeight: 700,
+            }}
+          >
+            Login Tracker
+          </Typography>
         </Box>
 
         {/* Navigation List */}
