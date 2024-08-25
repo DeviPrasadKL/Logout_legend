@@ -15,7 +15,7 @@ const Navbar = ({ onMenuClick }) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6">
-          Logout Legend
+          Login Tracker
         </Typography>
       </Toolbar>
     </AppBar>

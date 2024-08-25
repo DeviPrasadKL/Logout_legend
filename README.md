@@ -1,6 +1,6 @@
-# Logout Legend
+# Login Tracker
 
-**Logout Legend** is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.
+**Login Tracker** is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.
 
 ## Features
 
@@ -32,7 +32,7 @@
 
 1. **Install the App:** Click on [this link](https://logout-legend.onrender.com) to install the Progressive Web App. It’s lightweight and can be easily added to your mobile home screen.
 2. **Set Up Your Preferences:** Customize your settings including break reminders and mode preferences.
-3. **Start Using:** Begin your workday and let Logout Legend handle the time tracking and break management.
+3. **Start Using:** Begin your workday and let Login Tracker handle the time tracking and break management.
 
 ## Benefits
 

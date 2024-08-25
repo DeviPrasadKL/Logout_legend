@@ -14,7 +14,7 @@ export default defineConfig({
 //   manifest: {
 //     name: "Login Tracker",
 //     short_name: "Tracker",
-//     description: "Logout Legend is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.",
+//     description: "Login Tracker is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.",
 //     icons: [{
 //       src: '/android-chrome-192x192.png',
 //       sizes: '192x192',

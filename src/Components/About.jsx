@@ -5,7 +5,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
 
 const sentences = [
-  "Logout Legend is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.",
+  "Login Tracker is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.",
   "Track Login Times: Automatically record when you log in and out.",
   "Break Duration Monitoring: Keep track of your break times to ensure they’re within your desired limits.",
   "Productivity Focus: Minimize distractions related to time management, so you can concentrate on your work.",
@@ -52,7 +52,7 @@ const About = () => {
   return (
     <Box mx={2} mt={1} mb={4}>
       <Typography variant="h4" gutterBottom>
-        Logout Legend
+        Login Tracker
       </Typography>
       <Typography variant="body1" paragraph>
         {sentences.map((sentence, index) => (
@@ -93,7 +93,7 @@ const About = () => {
           <ListItemText primary="2. Set Up Your Preferences: Customize your settings including break reminders and mode preferences." />
         </ListItem>
         <ListItem>
-          <ListItemText primary="3. Start Using: Begin your workday and let Logout Legend handle the time tracking and break management." />
+          <ListItemText primary="3. Start Using: Begin your workday and let Login Tracker handle the time tracking and break management." />
         </ListItem>
       </List>
 

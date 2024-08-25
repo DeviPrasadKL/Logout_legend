@@ -57,7 +57,7 @@ const Sidebar = ({ open, onClose }) => {
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Optional shadow for depth
           }}
         >
-          <Typography variant="h6">Logout Legend</Typography>
+          <Typography variant="h6">Login Tracker</Typography>
         </Box>
 
         {/* Navigation List */}
