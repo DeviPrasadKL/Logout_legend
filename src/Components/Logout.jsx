@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, lazy } from 'react';
 //Lazy loading
 import Loadable from './Lodable';
-const SettingsSection = Loadable(lazy(()=> import('./SettingsSection')));
-const CloseConfirm = Loadable(lazy(()=> import('../UIComponents/ConfirmationDialog')));
-const LogoutAndCalculate = Loadable(lazy(()=> import('./LogoutAndCalculate')));
+const SettingsSection = Loadable(lazy(() => import('./SettingsSection')));
+const CloseConfirm = Loadable(lazy(() => import('../UIComponents/ConfirmationDialog')));
+const LogoutAndCalculate = Loadable(lazy(() => import('./LogoutAndCalculate')));
 
-import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton } from '@mui/material';
+import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
@@ -516,23 +516,87 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             <Stack p={2} justifyContent='center' alignItems='center'>
                 {/* Show the clear data button when user is logged out */}
                 {isLoggedOut ?
-                    <Button sx={{ height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" color='secondary' onClick={handleClearData} disabled={!isLoggedOut}>Clear Data</Button>
+                    <Button
+                        sx={{ height: '8rem', width: '12rem', borderRadius: '8%' }}
+                        variant="contained"
+                        color='secondary'
+                        onClick={handleClearData}
+                        disabled={!isLoggedOut}>
+                        Clear Data
+                    </Button>
                     :
                     <>
                         {/* else show Login, break start and break end buttons */}
-                        <Button variant="contained" color='success' onClick={handleLogin} sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} disabled={!!loginTime}>Login</Button>
-                        <Button sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" onClick={handleBreakStart} disabled={!loginTime || isBreakInProgress || isLoggedOut}>Break Start</Button>
-                        <Button sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }} variant="contained" color='error' onClick={handleBreakEnd} disabled={!isBreakInProgress}>Break End</Button>
+                        <Button variant="contained"
+                            color='success'
+                            onClick={handleLogin}
+                            sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}
+                            disabled={!!loginTime}>
+                            Login
+                        </Button>
+
+                        <Button
+                            sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}
+                            variant="contained"
+                            onClick={handleBreakStart}
+                            disabled={!loginTime || isBreakInProgress || isLoggedOut}>
+                            Start Break
+                        </Button>
+
+                        {/* <Button
+                            sx={{ display: !isBreakInProgress ? 'none' : 'block', height: '8rem', width: '8rem', borderRadius: '12%' }}
+                            variant="contained"
+                            color='error'
+                            onClick={handleBreakEnd}
+                            disabled={!isBreakInProgress}>
+                            Break End
+                        </Button> */}
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: !isBreakInProgress ? 'none' : 'flex',
+                                    height: '8rem',
+                                    width: '12rem',
+                                    borderRadius: '8%',
+                                    background: '#df0000',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    color: 'white',
+                                }}
+                                // variant="contained"
+                                // color="error"
+                                onClick={handleBreakEnd}
+                            // disabled={!isBreakInProgress}
+                            >
+                                <Typography
+                                    sx={{
+                                        color: 'white',
+                                        fontSize: '1rem',
+                                        textAlign: 'center',
+                                        fontSize: '2rem'
+                                    }}
+                                >
+                                    {formatTime(Math.floor(elapsedTime))}
+                                </Typography>
+
+                                End Break
+                            </Box>
+
+
+                        </Box>
                     </>
                 }
             </Stack>
 
-            {isBreakInProgress && (
-                <Typography variant="h6" style={{ marginTop: 20 }}>
-                    {/* Break Timer: {Math.floor(elapsedTime)} seconds<br /> */}
-                    Break Timer: {formatTime(Math.floor(elapsedTime))}
-                </Typography>
-            )}
 
             {breaks.length !== 0 && (
                 <TableContainer component={Paper} style={{ marginTop: 20 }}>
