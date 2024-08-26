@@ -1,8 +1,9 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Stack } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ThemeSwitcher from './ThemeSwitcher';
 
-const Navbar = ({ onMenuClick }) => {
+const Navbar = ({ onMenuClick, darkMode, handleThemeToggle }) => {
   return (
     <AppBar position="sticky" sx={{ top: 0, left: 0, right: 0 }}>
       <Toolbar>
@@ -14,9 +15,17 @@ const Navbar = ({ onMenuClick }) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6">
-          Login Tracker
-        </Typography>
+        <Stack flexDirection='row' justifyContent='space-between' alignItems='center' width='100%'>
+          <Typography variant="h6">
+            Login Tracker
+          </Typography>
+
+          {/* ThemeSwitcher component allows toggling between dark and light themes */}
+          <ThemeSwitcher
+            darkMode={darkMode}
+            handleThemeToggle={handleThemeToggle}
+          />
+        </Stack>
       </Toolbar>
     </AppBar>
   );

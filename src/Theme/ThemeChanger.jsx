@@ -78,7 +78,7 @@ export default function ThemeChanger() {
                     gap: 1,
                 }}
             >
-                <Navbar onMenuClick={handleMenuClick} />
+                <Navbar onMenuClick={handleMenuClick} darkMode={darkMode} handleThemeToggle={handleThemeToggle} />
                 <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
 
                 <Routes>

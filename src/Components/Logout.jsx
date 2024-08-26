@@ -614,8 +614,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 loginHours={loginHours}
                 handleLoginHoursSave={handleLoginHoursSave}
                 handleLoginHoursChange={handleLoginHoursChange}
-                darkMode={darkMode}
-                handleThemeToggle={handleThemeToggle}
             />
 
             {/* App close confirm dialog */}

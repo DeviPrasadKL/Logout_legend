@@ -1,7 +1,7 @@
 import React, { lazy } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Box, Stack } from '@mui/material';
 import Loadable from './Lodable';
-const ThemeSwitcher = Loadable(lazy(()=> import('../UIComponents/ThemeSwitcher')));
+const ThemeSwitcher = Loadable(lazy(() => import('../UIComponents/ThemeSwitcher')));
 
 /**
  * `LoginHoursSettings` is a functional React component that renders a dialog for configuring login hours.
@@ -12,8 +12,6 @@ const ThemeSwitcher = Loadable(lazy(()=> import('../UIComponents/ThemeSwitcher')
  * @param {Object} props.loginHours - Object containing the login hours for weekdays and Saturdays.
  * @param {Function} props.handleLoginHoursSave - Function to handle saving the login hours settings.
  * @param {Function} props.handleLoginHoursChange - Function to handle changes to the login hours input fields.
- * @param {boolean} props.darkMode - Boolean indicating if dark mode is enabled.
- * @param {Function} props.handleThemeToggle - Function to toggle between light and dark modes.
  * 
  * @returns {JSX.Element} The rendered component.
  */
@@ -23,8 +21,6 @@ export default function LoginHoursSettings({
     loginHours,
     handleLoginHoursSave,
     handleLoginHoursChange,
-    darkMode,
-    handleThemeToggle
 }) {
     return (
         <Box
@@ -56,7 +52,6 @@ export default function LoginHoursSettings({
                     }}
                 >
                     <Stack
-                        direction="row"
                         alignItems="center"
                         spacing={2}
                         sx={{
@@ -64,60 +59,55 @@ export default function LoginHoursSettings({
                             marginTop: '1rem'
                         }}
                     >
-                        {/* ThemeSwitcher component allows toggling between dark and light themes */}
-                        <ThemeSwitcher
-                            darkMode={darkMode}
-                            handleThemeToggle={handleThemeToggle}
+                        {/* TextField for entering weekday login hours */}
+                        <TextField
+                            label="Weekday Hours"
+                            type="number"
+                            name="weekday"
+                            value={loginHours.weekday}
+                            onChange={handleLoginHoursChange}
+                            inputProps={{ min: 0 }}
+                            fullWidth
+                            variant="outlined"
+                            sx={{
+                                '& .MuiInputLabel-root': {
+                                    color: 'text.primary',
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '8px',
+                                },
+                                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
+                                transition: 'all 0.3s ease',
+                                ':hover': {
+                                    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.3)',
+                                },
+                            }}
+                        />
+                        {/* TextField for entering Saturday login hours */}
+                        <TextField
+                            label="Saturday Hours"
+                            type="number"
+                            name="saturday"
+                            value={loginHours.saturday}
+                            onChange={handleLoginHoursChange}
+                            inputProps={{ min: 0 }}
+                            fullWidth
+                            variant="outlined"
+                            sx={{
+                                '& .MuiInputLabel-root': {
+                                    color: 'text.primary',
+                                },
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '8px',
+                                },
+                                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
+                                transition: 'all 0.3s ease',
+                                ':hover': {
+                                    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.3)',
+                                },
+                            }}
                         />
                     </Stack>
-                    {/* TextField for entering weekday login hours */}
-                    <TextField
-                        label="Weekday Hours"
-                        type="number"
-                        name="weekday"
-                        value={loginHours.weekday}
-                        onChange={handleLoginHoursChange}
-                        inputProps={{ min: 0 }}
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                color: 'text.primary',
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: '8px',
-                            },
-                            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
-                            transition: 'all 0.3s ease',
-                            ':hover': {
-                                boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.3)',
-                            },
-                        }}
-                    />
-                    {/* TextField for entering Saturday login hours */}
-                    <TextField
-                        label="Saturday Hours"
-                        type="number"
-                        name="saturday"
-                        value={loginHours.saturday}
-                        onChange={handleLoginHoursChange}
-                        inputProps={{ min: 0 }}
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                            '& .MuiInputLabel-root': {
-                                color: 'text.primary',
-                            },
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: '8px',
-                            },
-                            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
-                            transition: 'all 0.3s ease',
-                            ':hover': {
-                                boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.3)',
-                            },
-                        }}
-                    />
                 </DialogContent>
                 <DialogActions>
                     {/* Button to close the dialog without saving changes */}
