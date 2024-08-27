@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Grid, Box, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Typography, Button, Grid, Box, List, ListItem, ListItemText, Divider, Stack } from '@mui/material';
 import { History as HistoryIcon } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
@@ -51,32 +51,33 @@ const About = () => {
 
   return (
     <Box mx={2} mt={1} mb={4}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4">
         Login Tracker
       </Typography>
-      <Typography variant="body1" paragraph>
+      <List>
         {sentences.map((sentence, index) => (
-          <List key={index}>
-            <ListItem>
-              <ListItemText primary={`${index + 1}. ${sentence}`} />
-            </ListItem>
-            <Divider />
-          </List>
+          <ListItem key={index + sentence}>
+            <ListItemText primary={`${index + 1}. ${sentence}`} />
+          </ListItem>
         ))}
-      </Typography>
+      </List>
 
-      <Typography variant="h5" gutterBottom>
+      <Divider sx={{ marginBottom: '0.5rem' }} />
+
+      <Typography variant="h5">
         How It Works
       </Typography>
       <List>
         {HowItWorksSteps.map((step, index) => (
-          <ListItem key={index}>
+          <ListItem key={index + step}>
             <ListItemText primary={`${index + 1}. ${step}`} />
           </ListItem>
         ))}
       </List>
 
-      <Typography variant="h5" gutterBottom>
+      <Divider sx={{ marginBottom: '0.5rem' }} />
+
+      <Typography variant="h5">
         Getting Started
       </Typography>
       <List>
@@ -97,34 +98,38 @@ const About = () => {
         </ListItem>
       </List>
 
-      <Typography variant="h5" gutterBottom>
+      <Divider sx={{ marginBottom: '0.5rem' }} />
+
+      <Typography variant="h5">
         Benefits
       </Typography>
       <List>
         {benefits.map((benefit, index) => (
-          <ListItem key={index}>
+          <ListItem key={index + benefit}>
             <ListItemText primary={`${index + 1}. ${benefit}`} />
           </ListItem>
         ))}
       </List>
 
-      <Typography variant="h5" gutterBottom>
+      <Divider sx={{ marginBottom: '0.5rem' }} />
+
+      <Typography variant="h5">
         Support
       </Typography>
       <Support />
 
-      <Grid container spacing={2} marginTop={2}>
-        <Grid item>
-          <Button variant="contained" startIcon={<HomeIcon />} onClick={() => navigate('/Logout_legend')}>
-            Home
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button variant="contained" startIcon={<HistoryIcon />} onClick={() => navigate('/view_history')}>
-            View History
-          </Button>
-        </Grid>
-      </Grid>
+      <Divider sx={{ marginBottom: '0.5rem' }} />
+
+      <Stack flexDirection='row' justifyContent='space-between' flexWrap='wrap' mt={2}>
+        <Button variant="contained" startIcon={<HomeIcon />} onClick={() => navigate('/Logout_legend')}>
+          Home
+        </Button>
+
+        <Button variant="contained" startIcon={<HistoryIcon />} onClick={() => navigate('/view_history')}>
+          View History
+        </Button>
+      </Stack>
+
     </Box>
   );
 };
