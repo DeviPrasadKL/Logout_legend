@@ -4,6 +4,7 @@ import Loadable from './Lodable';
 const SettingsSection = Loadable(lazy(() => import('./SettingsSection')));
 const CloseConfirm = Loadable(lazy(() => import('../UIComponents/ConfirmationDialog')));
 const LogoutAndCalculate = Loadable(lazy(() => import('./LogoutAndCalculate')));
+const RecordExistsConfirm = Loadable(lazy(() => import('../UIComponents/RecordExistsConfirm')));
 
 import { Button, Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Stack, TextField, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -34,6 +35,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     const [logoutTime, setLogoutTime] = useState(null);
     const [isEditingLoginTime, setIsEditingLoginTime] = useState(false);
     const [editedLoginTime, setEditedLoginTime] = useState('');
+
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [confirmCallback, setConfirmCallback] = useState(null);
 
     const timerRef = useRef(null);
 
@@ -107,6 +111,13 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         }
     }, [loginTime]);
 
+    /**Function close Record exists dialouge */
+    const handleRecordExistsDialogClose = (confirmed) => {
+        setDialogOpen(false);
+        if (confirmed && confirmCallback) {
+            confirmCallback();
+        }
+    };
 
     //Hook to get Total Logged in hours without breaks
     const { totalLoggedInHours } = useTotalLoggedInHours(loginTime, logoutTime, breaks);
@@ -234,39 +245,39 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      * Also adds a record with the total break time.
      */
     const clearDataAndAddRecords = () => {
-        // Store current data before clearing
         if (loginTime) {
-            // Calculate total logged in time in seconds
             const totalLoggedInTime = (new Date().getTime() - loginTime.getTime()) / 1000;
-            const currentDate = new Date(loginTime).toISOString().split('T')[0]; // Save date in YYYY-MM-DD format
+            const loginDate = new Date(loginTime).toISOString().split('T')[0];
+            const currentDate = new Date();
+            const loginDateObj = new Date(loginDate);
+            const diffDays = Math.floor((currentDate - loginDateObj) / (1000 * 60 * 60 * 24));
 
-            // Create a new record object
-            const newRecord = {
-                date: currentDate,
-                loginTime: loginTime.toISOString(),
-                expectedLogoutTime: expectedLogoutTime?.toISOString() || null,
-                breaks: breaks,
-                logoutTime: logoutTime || null,
-                totalLoggedInTime: totalLoggedInHours, // Total logged in time in seconds
-                totalBreakTime: calculateTotalBreakDuration() // Total break time
-            };
+            if (diffDays <= 6) {
+                const newRecord = {
+                    date: loginDate,
+                    loginTime: loginTime.toISOString(),
+                    expectedLogoutTime: expectedLogoutTime?.toISOString() || null,
+                    breaks: breaks,
+                    logoutTime: logoutTime || null,
+                    totalLoggedInTime: totalLoggedInTime,
+                    totalBreakTime: calculateTotalBreakDuration()
+                };
 
-            // Retrieve existing records from localStorage
-            const existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+                const existingRecords = JSON.parse(localStorage.getItem('records')) || [];
+                const existingRecordIndex = existingRecords.findIndex(record => record.date === loginDate);
 
-            // Check if a record for the current date already exists
-            const existingRecordIndex = existingRecords.findIndex(record => record.date === currentDate);
-
-            if (existingRecordIndex >= 0) {
-                // Replace existing record
-                existingRecords[existingRecordIndex] = newRecord;
-            } else {
-                // Add new record
-                existingRecords.push(newRecord);
+                if (existingRecordIndex >= 0) {
+                    // Open confirmation dialog
+                    setDialogOpen(true);
+                    setConfirmCallback(() => () => {
+                        existingRecords[existingRecordIndex] = newRecord;
+                        localStorage.setItem('records', JSON.stringify(existingRecords));
+                    });
+                } else {
+                    existingRecords.push(newRecord);
+                    localStorage.setItem('records', JSON.stringify(existingRecords));
+                }
             }
-
-            // Save the updated records to localStorage
-            localStorage.setItem('records', JSON.stringify(existingRecords));
         }
 
         // Clear current data
@@ -283,6 +294,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         localStorage.removeItem('expectedLogoutTime');
         localStorage.removeItem('logoutTime');
     };
+
 
     /**
      * Clears all user data from localStorage except theme mode and login hours.
@@ -580,7 +592,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                                 <Typography
                                     sx={{
                                         color: 'white',
-                                        fontSize: '1rem',
                                         textAlign: 'center',
                                         fontSize: '2rem'
                                     }}
@@ -690,6 +701,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 no='No'
                 yes='Yes'
             />
+            
+            {/* Record Replace dialouge */}
+            <RecordExistsConfirm open={isDialogOpen} onClose={handleRecordExistsDialogClose} />
         </Container>
     );
 }
