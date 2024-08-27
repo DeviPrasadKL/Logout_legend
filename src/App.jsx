@@ -4,7 +4,6 @@ import Loadable from "./Components/Lodable";
 const ThemeChanger = Loadable(lazy(()=> import('../src/Theme/ThemeChanger')));
 
 function App() {
-
   return (
     <>
       <Box>
