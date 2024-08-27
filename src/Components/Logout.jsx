@@ -580,7 +580,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                                 <Typography
                                     sx={{
                                         color: 'white',
-                                        fontSize: '1rem',
                                         textAlign: 'center',
                                         fontSize: '2rem'
                                     }}
