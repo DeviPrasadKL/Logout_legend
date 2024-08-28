@@ -246,7 +246,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      */
     const clearDataAndAddRecords = () => {
         if (loginTime) {
-            const totalLoggedInTime = (new Date().getTime() - loginTime.getTime()) / 1000;
             const loginDate = new Date(loginTime).toISOString().split('T')[0];
             const currentDate = new Date();
             const loginDateObj = new Date(loginDate);
@@ -259,7 +258,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                     expectedLogoutTime: expectedLogoutTime?.toISOString() || null,
                     breaks: breaks,
                     logoutTime: logoutTime || null,
-                    totalLoggedInTime: totalLoggedInTime,
+                    totalLoggedInTime: totalLoggedInHours,
                     totalBreakTime: calculateTotalBreakDuration()
                 };
 
