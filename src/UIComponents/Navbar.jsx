@@ -16,7 +16,7 @@ const Navbar = ({ onMenuClick, darkMode, handleThemeToggle }) => {
           <MenuIcon />
         </IconButton>
         <Stack flexDirection='row' justifyContent='space-between' alignItems='center' width='100%'>
-          <Typography variant="h6">
+          <Typography variant="h6" sx={{fontFamily:'serif'}}>
             Login Tracker
           </Typography>
 

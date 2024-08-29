@@ -483,7 +483,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         <Container>
 
             <Stack flexDirection='row' justifyContent='space-between' alignItems='baseline'>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" gutterBottom sx={{fontFamily:'serif'}}>
                     {loginTime ? `${formatDate(loginTime)}` : 'No login time recorded'}
                 </Typography>
                 <IconButton onClick={() => setLoginHoursDialogOpen(true)} color='secondary'>
@@ -538,13 +538,13 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                     :
                     <>
                         {/* else show Login, break start and break end buttons */}
-                        <Button variant="contained"
-                            color='success'
+                        <Stack justifyContent='center' alignItems='center'
+                            // color='#32bd39'
                             onClick={handleLogin}
-                            sx={{ display: !!loginTime ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}
+                            sx={{ display: !!loginTime ? 'none' : 'flex', height: '8rem', width: '12rem', borderRadius: '8%', backgroundColor:'#32bd39', color:'white', fontSize:'1.5rem', fontWeight:'800', fontFamily:'serif' }}
                             disabled={!!loginTime}>
                             Login
-                        </Button>
+                        </Stack>
 
                         <Button
                             sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}

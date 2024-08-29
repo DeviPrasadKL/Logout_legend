@@ -1,3 +1,7 @@
+*{
+  font-family: serif;
+}
+
 .fallback-spinner {
     position: relative;
     display: flex;
