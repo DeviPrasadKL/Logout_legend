@@ -506,7 +506,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                         </>
                     ) : (
                         <>
-                            <Typography variant="body1">
+                            <Typography variant="p">
                                 Logged In:- {loginTime.toLocaleTimeString('en-US', timeOptions)}
                             </Typography>
                             <IconButton onClick={() => setIsEditingLoginTime(true)} color='secondary'>
@@ -613,9 +613,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Break Start</TableCell>
-                                <TableCell>Break End</TableCell>
-                                <TableCell>Break Duration</TableCell>
+                                <TableCell>Start</TableCell>
+                                <TableCell>End</TableCell>
+                                <TableCell>Duration</TableCell>
                                 <TableCell>Actions</TableCell> {/* New column for delete icon */}
                             </TableRow>
                         </TableHead>
