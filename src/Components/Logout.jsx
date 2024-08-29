@@ -35,6 +35,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     const [logoutTime, setLogoutTime] = useState(null);
     const [isEditingLoginTime, setIsEditingLoginTime] = useState(false);
     const [editedLoginTime, setEditedLoginTime] = useState('');
+    const [effectiveLoginTime, setEffectiveLoginTime] = useState('00:00:00');
 
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [confirmCallback, setConfirmCallback] = useState(null);
@@ -110,6 +111,33 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             setEditedLoginTime(loginTime.toTimeString().substr(0, 5)); // Format to HH:mm
         }
     }, [loginTime]);
+
+    useEffect(() => {
+        if (loginTime && !isLoggedOut) {
+            if (!isBreakInProgress) {
+                const effectiveInterval = setInterval(() => {
+                    const now = new Date();
+                    const elapsedTime = Math.floor((now - loginTime) / 1000); // in seconds
+                    const breakDuration = breaks.reduce((total, b) => {
+                        const breakStartTime = new Date(b.start);
+                        const breakEndTime = new Date(b.end);
+                        return total + Math.floor((breakEndTime - breakStartTime) / 1000);
+                    }, 0);
+                    setEffectiveLoginTime(EffectiveHoursFormatTime(elapsedTime - breakDuration));
+                }, 1000);
+
+                return () => clearInterval(effectiveInterval);
+            }
+        }
+    }, [loginTime, isLoggedOut, isBreakInProgress, breaks]);
+
+
+    const EffectiveHoursFormatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m:${secs.toString().padStart(2, '0')}s`;
+    };
 
     /**Function close Record exists dialouge */
     const handleRecordExistsDialogClose = (confirmed) => {
@@ -483,7 +511,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         <Container>
 
             <Stack flexDirection='row' justifyContent='space-between' alignItems='baseline'>
-                <Typography variant="h5" gutterBottom sx={{fontFamily:'serif'}}>
+                <Typography variant="h5" gutterBottom sx={{ fontFamily: 'serif' }}>
                     {loginTime ? `${formatDate(loginTime)}` : 'No login time recorded'}
                 </Typography>
                 <IconButton onClick={() => setLoginHoursDialogOpen(true)} color='secondary'>
@@ -541,7 +569,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                         <Stack justifyContent='center' alignItems='center'
                             // color='#32bd39'
                             onClick={handleLogin}
-                            sx={{ display: !!loginTime ? 'none' : 'flex', height: '8rem', width: '12rem', borderRadius: '8%', backgroundColor:'#32bd39', color:'white', fontSize:'1.5rem', fontWeight:'800', fontFamily:'serif' }}
+                            sx={{ display: !!loginTime ? 'none' : 'flex', height: '8rem', width: '12rem', borderRadius: '8%', backgroundColor: '#32bd39', color: 'white', fontSize: '1.5rem', fontWeight: '800', fontFamily: 'serif' }}
                             disabled={!!loginTime}>
                             Login
                         </Stack>
@@ -663,6 +691,14 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 </Stack>
             )}
 
+            <Stack justifyContent='center' alignItems='center' mt={2}>
+                {loginTime && (
+                    <Typography variant="p">
+                        Effective Login Hours: {effectiveLoginTime}
+                    </Typography>
+                )}
+            </Stack>
+
             {loginTime &&
                 <Stack pb={2}>
                     {!isBreakInProgress &&
@@ -700,7 +736,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 no='No'
                 yes='Yes'
             />
-            
+
             {/* Record Replace dialouge */}
             <RecordExistsConfirm open={isDialogOpen} onClose={handleRecordExistsDialogClose} />
         </Container>
