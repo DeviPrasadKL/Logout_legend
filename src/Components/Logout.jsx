@@ -112,6 +112,17 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         }
     }, [loginTime]);
 
+    /**
+     * A React hook that updates the effective login time, accounting for breaks.
+     * 
+     * The effective login time is the total time elapsed since the login, 
+     * minus the total duration of any breaks taken.
+     * 
+     * @param {Date} loginTime - The time when the user logged in.
+     * @param {boolean} isLoggedOut - Indicates whether the user is logged out.
+     * @param {boolean} isBreakInProgress - Indicates whether a break is currently in progress.
+     * @param {Array} breaks - An array of break objects, each containing a start and end time.
+     */
     useEffect(() => {
         if (loginTime && !isLoggedOut) {
             if (!isBreakInProgress) {
@@ -131,12 +142,17 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         }
     }, [loginTime, isLoggedOut, isBreakInProgress, breaks]);
 
-
+    /**
+     * Formats the effective login time from seconds into a string showing hours, minutes, and seconds.
+     * 
+     * @param {number} seconds - The total number of seconds to format.
+     * @returns {string} - A string representing the time in "hh:mm:ss" format.
+     */
     const EffectiveHoursFormatTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         const secs = Math.floor(seconds % 60);
-        return `${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}m:${secs.toString().padStart(2, '0')}s`;
+        return `${hours.toString().padStart(2, '0')}h  ${minutes.toString().padStart(2, '0')}m  ${secs.toString().padStart(2, '0')}s`;
     };
 
     /**Function close Record exists dialouge */
@@ -511,7 +527,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         <Container>
 
             <Stack flexDirection='row' justifyContent='space-between' alignItems='baseline'>
-                <Typography variant="h5" gutterBottom sx={{ fontFamily: 'serif' }}>
+                <Typography variant="h5" gutterBottom>
                     {loginTime ? `${formatDate(loginTime)}` : 'No login time recorded'}
                 </Typography>
                 <IconButton onClick={() => setLoginHoursDialogOpen(true)} color='secondary'>
@@ -569,7 +585,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                         <Stack justifyContent='center' alignItems='center'
                             // color='#32bd39'
                             onClick={handleLogin}
-                            sx={{ display: !!loginTime ? 'none' : 'flex', height: '8rem', width: '12rem', borderRadius: '8%', backgroundColor: '#32bd39', color: 'white', fontSize: '1.5rem', fontWeight: '800', fontFamily: 'serif' }}
+                            sx={{ display: !!loginTime ? 'none' : 'flex', height: '8rem', width: '12rem', borderRadius: '8%', backgroundColor: '#32bd39', color: 'white', fontSize: '1.5rem', fontWeight: '800' }}
                             disabled={!!loginTime}>
                             Login
                         </Stack>

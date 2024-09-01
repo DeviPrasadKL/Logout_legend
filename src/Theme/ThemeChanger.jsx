@@ -46,6 +46,12 @@ export default function ThemeChanger() {
                 easing: 'ease',
             }),
         },
+        typography:{
+            fontFamily: [
+                'Montserrat',
+                'sans-serif'
+            ].join(','),
+        }
     });
 
     /**

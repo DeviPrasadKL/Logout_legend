@@ -3,9 +3,7 @@ import { Container, Typography, Button, Stack, Table, TableBody, TableCell, Tabl
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import DownloadIcon from '@mui/icons-material/Download';
-// import ArrowForwardIosIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-// import ArrowBackIosNewIcon from '@mui/icons-material/KeyboardArrowLeft';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 /**
@@ -27,18 +25,6 @@ const getDateRange = () => {
     const fiveDaysAgo = new Date(today);
     fiveDaysAgo.setDate(today.getDate() - 5);
     return { startDate: fiveDaysAgo, endDate: today };
-};
-
-/**
- * Formats a given number of seconds into a string in 'hh:mm:ss' format.
- * @param {number} seconds - The total number of seconds to format.
- * @returns {string} - The formatted time string.
- */
-const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return [hrs, mins, secs].map(val => String(val).padStart(2, '0')).join(':');
 };
 
 /**

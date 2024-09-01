@@ -51,7 +51,7 @@ const About = () => {
 
   return (
     <Box mx={2} mt={1} mb={4}>
-      <Typography variant="h4" sx={{fontFamily:'serif'}}>
+      <Typography variant="h4">
         Login Tracker
       </Typography>
       <List>
@@ -64,7 +64,7 @@ const About = () => {
 
       <Divider sx={{ marginBottom: '0.5rem' }} />
 
-      <Typography variant="h5" sx={{fontFamily:'serif'}}>
+      <Typography variant="h5">
         How It Works
       </Typography>
       <List>
@@ -77,7 +77,7 @@ const About = () => {
 
       <Divider sx={{ marginBottom: '0.5rem' }} />
 
-      <Typography variant="h5" sx={{fontFamily:'serif'}}>
+      <Typography variant="h5">
         Getting Started
       </Typography>
       <List>
@@ -100,7 +100,7 @@ const About = () => {
 
       <Divider sx={{ marginBottom: '0.5rem' }} />
 
-      <Typography variant="h5" sx={{fontFamily:'serif'}}>
+      <Typography variant="h5">
         Benefits
       </Typography>
       <List>
@@ -113,7 +113,7 @@ const About = () => {
 
       <Divider sx={{ marginBottom: '0.5rem' }} />
 
-      <Typography variant="h5" sx={{fontFamily:'serif'}}>
+      <Typography variant="h5">
         Support
       </Typography>
       <Support />
