@@ -633,6 +633,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                             // disabled={!isBreakInProgress}
                             >
                                 <Typography
+                                    className='avoidLayoutChange'
                                     sx={{
                                         color: 'white',
                                         textAlign: 'center',
@@ -682,7 +683,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
             <Stack justifyContent='center' alignItems='center' mt={2}>
                 {loginTime && (
-                    <Typography variant="p">
+                    <Typography variant="p" className='avoidLayoutChange'>
                         Effective Login Hours: {effectiveLoginTime}
                     </Typography>
                 )}

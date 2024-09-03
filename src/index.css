@@ -76,4 +76,7 @@
       opacity: 1;
     }
   }
-  
+
+.avoidLayoutChange{
+  font-variant-numeric: tabular-nums;
+}
