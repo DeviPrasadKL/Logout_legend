@@ -7,7 +7,6 @@ import { Route, Routes } from 'react-router-dom';
 import RecordsViewer from '../Components/RecordsViewer';
 import About from '../Components/About';
 
-
 /**
  * The `ThemeChanger` component manages and applies theme settings for the application.
  * It provides a toggle for switching between light and dark mode themes.
