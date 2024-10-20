@@ -35,7 +35,7 @@ const Sidebar = ({ open, onClose }) => {
           position: 'fixed',
           top: 0,
           left: 0,
-          transition: 'transform 0.3s ease-in-out',
+          transition: 'transform 0.4s ease-in-out',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
           zIndex: 1300,  // Higher z-index than overlay
           display: 'flex',

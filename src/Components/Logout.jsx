@@ -354,63 +354,71 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      * Adds a manual break with a specified duration and updates the list of breaks and expected logout time.
      */
     const handleAddManualBreak = () => {
-        const minutes = parseInt(manualBreakDuration, 10);
-        if (isNaN(minutes) || minutes <= 0) {
-            alert("Please enter a valid number of minutes.");
-            return;
-        }
-
-        const now = new Date();
-        const durationInMs = minutes * 60 * 1000;
-
+        if (manualBreakDuration === '') return;
+    
+        // Convert manualBreakDuration (in minutes) to milliseconds
+        const manualBreakDurationMs = manualBreakDuration * 60 * 1000;
+    
+        // Add a new break manually
         const newBreak = {
-            start: now.toISOString(),
-            end: now.toISOString(),
-            duration: `${minutes}m 0s`
+            start: new Date(), // Assuming the current time as start
+            end: new Date(new Date().getTime() + manualBreakDurationMs), // Set the end time based on duration
+            duration: `${manualBreakDuration}m 0s`, // Format the duration string
         };
-
-        const newBreaks = [...breaks, newBreak];
-        setBreaks(newBreaks);
-
-        // Update expected logout time if it's already set
-        if (expectedLogoutTime) {
-            const updatedLogoutTime = new Date(expectedLogoutTime.getTime() + durationInMs);
-            setExpectedLogoutTime(updatedLogoutTime);
-            localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
-        }
-
-        localStorage.setItem('breaks', JSON.stringify(newBreaks));
-        setManualBreakDuration(''); // Clear input field
+    
+        // Update the breaks array
+        setBreaks([...breaks, newBreak]);
+    
+        // Adjust the effective login time
+        const [hours, minutes] = effectiveLoginTime.split(':').map(Number);
+        let totalEffectiveMinutes = hours * 60 + minutes;
+    
+        // Subtract manual break duration
+        totalEffectiveMinutes -= parseInt(manualBreakDuration, 10);
+    
+        // Recalculate hours and minutes
+        const updatedHours = Math.floor(totalEffectiveMinutes / 60);
+        const updatedMinutes = totalEffectiveMinutes % 60;
+    
+        // Set the updated effective login time
+        const newEffectiveLoginTime = `${updatedHours.toString().padStart(2, '0')}:${updatedMinutes.toString().padStart(2, '0')}`;
+        setEffectiveLoginTime(newEffectiveLoginTime);
+    
+        // Clear manual break duration input
+        setManualBreakDuration('');
     };
+    
 
     /**
      * Function to delete the breaks and update in localstorage
      * @param {number} index - Index of the row which has to be deleted
      */
-    const handleDeleteBreak = (index) => {
-        const breakToRemove = breaks[index];
-        const durationToRemove = breakToRemove.duration.split('m').map(part => parseInt(part, 10));
-        const durationToRemoveMs = (durationToRemove[0] || 0) * 60 * 1000 + (durationToRemove[1] || 0) * 1000;
-
-        const updatedBreaks = breaks.filter((_, i) => i !== index);
+    const handleDeleteBreak = (breakIndex) => {
+        const breakToDelete = breaks[breakIndex];
+    
+        // Extract the duration of the break (in minutes)
+        const [minutes, seconds] = breakToDelete.duration.split('m').map(part => parseInt(part, 10));
+        const breakDurationInMinutes = (minutes || 0) + (seconds ? seconds / 60 : 0);
+    
+        // Update the effective login time
+        const [hours, currentMinutes] = effectiveLoginTime.split(':').map(Number);
+        let totalEffectiveMinutes = hours * 60 + currentMinutes;
+    
+        // Add back the break duration
+        totalEffectiveMinutes += breakDurationInMinutes;
+    
+        // Recalculate hours and minutes for effective login time
+        const updatedHours = Math.floor(totalEffectiveMinutes / 60);
+        const updatedMinutes = Math.floor(totalEffectiveMinutes % 60);
+    
+        const newEffectiveLoginTime = `${updatedHours.toString().padStart(2, '0')}:${updatedMinutes.toString().padStart(2, '0')}`;
+        setEffectiveLoginTime(newEffectiveLoginTime);
+    
+        // Remove the break from the list
+        const updatedBreaks = [...breaks];
+        updatedBreaks.splice(breakIndex, 1);
         setBreaks(updatedBreaks);
-
-        // Calculate new total break duration
-        const totalBreakDuration = updatedBreaks.reduce((acc, b) => {
-            const [minutes, seconds] = b.duration.split('m').map(part => parseInt(part, 10));
-            const durationInMs = (minutes || 0) * 60 * 1000 + (seconds || 0) * 1000;
-            return acc + durationInMs;
-        }, 0);
-
-        // Adjust expected logout time
-        if (expectedLogoutTime) {
-            const updatedLogoutTime = new Date(expectedLogoutTime.getTime() - durationToRemoveMs);
-            setExpectedLogoutTime(updatedLogoutTime);
-            localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
-        }
-
-        localStorage.setItem('breaks', JSON.stringify(updatedBreaks));
-    };
+    };    
 
     /**
      * Function to store the login hours settigs in local storage
