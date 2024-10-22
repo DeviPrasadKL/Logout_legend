@@ -405,31 +405,22 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      * Function to delete the breaks and update in localstorage
      * @param {number} index - Index of the row which has to be deleted
      */
-    const handleDeleteBreak = (breakIndex) => {
-        const breakToDelete = breaks[breakIndex];
+    const handleDeleteBreak = (index) => {
+        const breakToRemove = breaks[index];
+        const durationToRemove = breakToRemove.duration.split('m').map(part => parseInt(part, 10));
+        const durationToRemoveMs = (durationToRemove[0] || 0) * 60 * 1000 + (durationToRemove[1] || 0) * 1000;
     
-        // Extract the duration of the break (in minutes)
-        const [minutes, seconds] = breakToDelete.duration.split('m').map(part => parseInt(part, 10));
-        const breakDurationInMinutes = (minutes || 0) + (seconds ? seconds / 60 : 0);
-    
-        // Update the effective login time
-        const [hours, currentMinutes] = effectiveLoginTime.split(':').map(Number);
-        let totalEffectiveMinutes = hours * 60 + currentMinutes;
-    
-        // Add back the break duration
-        totalEffectiveMinutes += breakDurationInMinutes;
-    
-        // Recalculate hours and minutes for effective login time
-        const updatedHours = Math.floor(totalEffectiveMinutes / 60);
-        const updatedMinutes = Math.floor(totalEffectiveMinutes % 60);
-    
-        const newEffectiveLoginTime = `${updatedHours.toString().padStart(2, '0')}:${updatedMinutes.toString().padStart(2, '0')}`;
-        setEffectiveLoginTime(newEffectiveLoginTime);
-    
-        // Remove the break from the list
-        const updatedBreaks = [...breaks];
-        updatedBreaks.splice(breakIndex, 1);
+        // Update breaks array by filtering out the removed break
+        const updatedBreaks = breaks.filter((_, i) => i !== index);
         setBreaks(updatedBreaks);
+        localStorage.setItem('breaks', JSON.stringify(updatedBreaks));
+    
+        // Adjust expected logout time if it's set
+        if (expectedLogoutTime) {
+            const updatedLogoutTime = new Date(expectedLogoutTime.getTime() - durationToRemoveMs);
+            setExpectedLogoutTime(updatedLogoutTime);
+            localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
+        }
     };    
 
     /**
