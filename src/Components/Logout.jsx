@@ -354,28 +354,41 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      * Adds a manual break with a specified duration and updates the list of breaks and expected logout time.
      */
     const handleAddManualBreak = () => {
-        if (manualBreakDuration === '') return;
+        const minutes = parseInt(manualBreakDuration, 10);
+        if (isNaN(minutes) || minutes <= 0) {
+            alert("Please enter a valid number of minutes.");
+            return;
+        }
     
-        // Convert manualBreakDuration (in minutes) to milliseconds
-        const manualBreakDurationMs = manualBreakDuration * 60 * 1000;
+        const now = new Date();
+        const durationInMs = minutes * 60 * 1000;
     
-        // Add a new break manually
+        // Create a new break
         const newBreak = {
-            start: new Date(), // Assuming the current time as start
-            end: new Date(new Date().getTime() + manualBreakDurationMs), // Set the end time based on duration
-            duration: `${manualBreakDuration}m 0s`, // Format the duration string
+            start: now.toISOString(),
+            end: new Date(now.getTime() + durationInMs).toISOString(),
+            duration: `${minutes}m 0s`
         };
     
-        // Update the breaks array
-        setBreaks([...breaks, newBreak]);
+        // Update breaks array
+        const newBreaks = [...breaks, newBreak];
+        setBreaks(newBreaks);
+        localStorage.setItem('breaks', JSON.stringify(newBreaks));
+    
+        // Update expected logout time if it's already set
+        if (expectedLogoutTime) {
+            const updatedLogoutTime = new Date(expectedLogoutTime.getTime() + durationInMs);
+            setExpectedLogoutTime(updatedLogoutTime);
+            localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
+        }
     
         // Adjust the effective login time
-        const [hours, minutes] = effectiveLoginTime.split(':').map(Number);
-        let totalEffectiveMinutes = hours * 60 + minutes;
-    
+        const [hours, minutesEffective] = effectiveLoginTime.split(':').map(Number);
+        let totalEffectiveMinutes = hours * 60 + minutesEffective;
+        
         // Subtract manual break duration
-        totalEffectiveMinutes -= parseInt(manualBreakDuration, 10);
-    
+        totalEffectiveMinutes -= minutes;
+        
         // Recalculate hours and minutes
         const updatedHours = Math.floor(totalEffectiveMinutes / 60);
         const updatedMinutes = totalEffectiveMinutes % 60;
@@ -387,7 +400,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         // Clear manual break duration input
         setManualBreakDuration('');
     };
-    
 
     /**
      * Function to delete the breaks and update in localstorage
