@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemText, Divider, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemText, Divider, Typography, Stack } from '@mui/material';
 import { Home as HomeIcon, History as HistoryIcon, Info as InfoIcon } from '@mui/icons-material'; // Importing necessary icons
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +35,7 @@ const Sidebar = ({ open, onClose }) => {
           position: 'fixed',
           top: 0,
           left: 0,
-          transition: 'transform 0.4s ease-in-out',
+          transition: 'transform 0.3s ease-in-out',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
           zIndex: 1300,  // Higher z-index than overlay
           display: 'flex',
@@ -58,34 +58,39 @@ const Sidebar = ({ open, onClose }) => {
           }}
         >
           <Typography
-            variant="h6"
             sx={{
               fontFamily: 'Roboto Slab, serif',
               fontWeight: 700,
             }}
-          >
-            Login Tracker
+            variant="h6">Login Tracker
           </Typography>
         </Box>
 
         {/* Navigation List */}
-        <List sx={{ paddingTop: '8px' }}>
-          <ListItem button onClick={() => navigateTo('/Logout_legend')}>
-            <HomeIcon sx={{ mr: 2 }} />  {/* Icon for Home */}
-            <ListItemText primary="Home" />
-          </ListItem>
-          <Divider />
-          <ListItem button onClick={() => navigateTo('/view_history')}>
-            <HistoryIcon sx={{ mr: 2 }} />  {/* Icon for View History */}
-            <ListItemText primary="View History" />
-          </ListItem>
-          <Divider />
-          <ListItem button onClick={() => navigateTo('/about')}>
-            <InfoIcon sx={{ mr: 2 }} />  {/* Icon for About */}
-            <ListItemText primary="About" />
-          </ListItem>
-          <Divider />
-        </List>
+        <Stack justifyContent='space-between' height='100%'>
+          <List sx={{ paddingTop: '8px' }}>
+            <ListItem button onClick={() => navigateTo('/')}>
+              <HomeIcon sx={{ mr: 2 }} />  {/* Icon for Home */}
+              <ListItemText primary="Home" />
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={() => navigateTo('/view_history')}>
+              <HistoryIcon sx={{ mr: 2 }} />  {/* Icon for View History */}
+              <ListItemText primary="View History" />
+            </ListItem>
+            <Divider />
+            <ListItem button onClick={() => navigateTo('/about')}>
+              <InfoIcon sx={{ mr: 2 }} />  {/* Icon for About */}
+              <ListItemText primary="About" />
+            </ListItem>
+            <Divider />
+          </List>
+          <Stack alignItems='center' pb={2}>
+            <Typography>
+              App by Deviprasad
+            </Typography>
+          </Stack>
+        </Stack>
       </Box>
     </>
   );
