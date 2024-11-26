@@ -69,7 +69,7 @@ const Sidebar = ({ open, onClose }) => {
         {/* Navigation List */}
         <Stack justifyContent='space-between' height='100%'>
           <List sx={{ paddingTop: '8px' }}>
-            <ListItem button onClick={() => navigateTo('/')}>
+            <ListItem button onClick={() => navigateTo('/Logout_legend')}>
               <HomeIcon sx={{ mr: 2 }} />  {/* Icon for Home */}
               <ListItemText primary="Home" />
             </ListItem>
