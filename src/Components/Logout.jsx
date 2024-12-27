@@ -167,16 +167,16 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     const { totalLoggedInHours } = useTotalLoggedInHours(loginTime, logoutTime, breaks);
 
     /**
-     * Function to remove records older than 5 days
+     * Function to remove records older than 15 days
      */
     const removeOldRecords = () => {
         const now = new Date();
-        const cutoffDate = new Date(now.setDate(now.getDate() - 5)).toISOString().split('T')[0]; // Date 5 days ago
+        const cutoffDate = new Date(now.setDate(now.getDate() - 15)).toISOString().split('T')[0]; // Date 15 days ago
 
         // Retrieve existing records from localStorage
         const existingRecords = JSON.parse(localStorage.getItem('records')) || [];
 
-        // Filter out records older than 5 days
+        // Filter out records older than 15 days
         const updatedRecords = existingRecords.filter(record => record.date >= cutoffDate);
 
         // Save the updated records back to localStorage

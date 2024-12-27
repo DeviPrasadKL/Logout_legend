@@ -17,13 +17,13 @@ const formatDate = (date) => {
 };
 
 /**
- * Gets the start and end dates of a 5-day range ending today.
+ * Gets the start and end dates of a 15-day range ending today.
  * @returns {Object} - An object containing the startDate and endDate.
  */
 const getDateRange = () => {
     const today = new Date();
     const fiveDaysAgo = new Date(today);
-    fiveDaysAgo.setDate(today.getDate() - 5);
+    fiveDaysAgo.setDate(today.getDate() - 15);
     return { startDate: fiveDaysAgo, endDate: today };
 };
 
