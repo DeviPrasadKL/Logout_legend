@@ -13,6 +13,11 @@ import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 
+//For analytics
+import ReactGA from "react-ga4";
+import { useLocation } from 'react-router-dom';
+import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
+
 /**
  * A component for which renders all the other main componennts inside with all the logic.
  * @param {boolean} darkMode - Indicates whether dark mode is currently enabled.
@@ -41,6 +46,9 @@ export default function Logout({ darkMode, handleThemeToggle }) {
     const [confirmCallback, setConfirmCallback] = useState(null);
 
     const timerRef = useRef(null);
+    const location = useLocation();
+    // Custom hook to get the event tracking function
+    const { handleEvent } = useOfflineEventTracker();
 
     useEffect(() => {
         // Load saved data from localStorage on component mount
@@ -88,7 +96,13 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             setIsLoggedOut(false);
             setLogoutTime(null);
         }
+
     }, []);
+
+    //For analytics 
+    useEffect(() => {
+        ReactGA.send({hitType: "pageview", page: location.pathname + location.search, title: "Homescreen" });
+    }, [location]);
 
     useEffect(() => {
         // Timer for tracking elapsed time during a break
@@ -228,7 +242,24 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         localStorage.setItem('loginTime', now.toISOString());
         updateExpectedLogoutTime(now);
         setIsLoggedOut(false);
-        setLogoutTime(null)
+        setLogoutTime(null);
+
+        // Get the current date in DD-MM-YYYY format
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+
+        // Analytics 
+        const eventData = {
+            category: 'Login',
+            action: 'Logged In',
+            label: 'Login',
+            value: `${formattedDate} ${now.toLocaleTimeString('en-US', timeOptions)}`
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
     };
 
     /** 
@@ -358,46 +389,57 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             alert("Please enter a valid number of minutes.");
             return;
         }
-    
+
         const now = new Date();
         const durationInMs = minutes * 60 * 1000;
-    
+
         // Create a new break
         const newBreak = {
             start: now.toISOString(),
             end: new Date(now.getTime() + durationInMs).toISOString(),
             duration: `${minutes}m 0s`
         };
-    
+
         // Update breaks array
         const newBreaks = [...breaks, newBreak];
         setBreaks(newBreaks);
         localStorage.setItem('breaks', JSON.stringify(newBreaks));
-    
+
         // Update expected logout time if it's already set
         if (expectedLogoutTime) {
             const updatedLogoutTime = new Date(expectedLogoutTime.getTime() + durationInMs);
             setExpectedLogoutTime(updatedLogoutTime);
             localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
         }
-    
+
         // Adjust the effective login time
         const [hours, minutesEffective] = effectiveLoginTime.split(':').map(Number);
         let totalEffectiveMinutes = hours * 60 + minutesEffective;
-        
+
         // Subtract manual break duration
         totalEffectiveMinutes -= minutes;
-        
+
         // Recalculate hours and minutes
         const updatedHours = Math.floor(totalEffectiveMinutes / 60);
         const updatedMinutes = totalEffectiveMinutes % 60;
-    
+
         // Set the updated effective login time
         const newEffectiveLoginTime = `${updatedHours.toString().padStart(2, '0')}:${updatedMinutes.toString().padStart(2, '0')}`;
         setEffectiveLoginTime(newEffectiveLoginTime);
-    
+
         // Clear manual break duration input
         setManualBreakDuration('');
+
+        //Analytics 
+        const eventData = {
+            category: 'Breaks',
+            action: 'Add manual break',
+            label: 'Manual break',
+            value: newBreak
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
     };
 
     /**
@@ -408,19 +450,29 @@ export default function Logout({ darkMode, handleThemeToggle }) {
         const breakToRemove = breaks[index];
         const durationToRemove = breakToRemove.duration.split('m').map(part => parseInt(part, 10));
         const durationToRemoveMs = (durationToRemove[0] || 0) * 60 * 1000 + (durationToRemove[1] || 0) * 1000;
-    
+
         // Update breaks array by filtering out the removed break
         const updatedBreaks = breaks.filter((_, i) => i !== index);
         setBreaks(updatedBreaks);
         localStorage.setItem('breaks', JSON.stringify(updatedBreaks));
-    
+
         // Adjust expected logout time if it's set
         if (expectedLogoutTime) {
             const updatedLogoutTime = new Date(expectedLogoutTime.getTime() - durationToRemoveMs);
             setExpectedLogoutTime(updatedLogoutTime);
             localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
         }
-    };    
+
+        //Analytics 
+        const eventData = {
+            category: 'Breaks',
+            action: 'Delete break',
+            label: 'Delete break',
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
+    };
 
     /**
      * Function to store the login hours settigs in local storage
@@ -587,7 +639,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                         color='secondary'
                         onClick={handleClearData}
                         disabled={!isLoggedOut}>
-                        Clear Data
+                        Clear
                     </Button>
                     :
                     <>
@@ -643,7 +695,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                             // disabled={!isBreakInProgress}
                             >
                                 <Typography
-                                className='avoidLayoutChange'
+                                    className='avoidLayoutChange'
                                     sx={{
                                         color: 'white',
                                         fontSize: '1rem',
@@ -665,11 +717,11 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
             {breaks.length !== 0 && (
                 <BreaksTable
-                breaks={breaks}
-                handleDeleteBreak={handleDeleteBreak}
-                canDeleteBreak={canDeleteBreak}
-                calculateTotalBreakDuration={calculateTotalBreakDuration}
-                timeOptions={timeOptions}
+                    breaks={breaks}
+                    handleDeleteBreak={handleDeleteBreak}
+                    canDeleteBreak={canDeleteBreak}
+                    calculateTotalBreakDuration={calculateTotalBreakDuration}
+                    timeOptions={timeOptions}
                 />
             )}
 

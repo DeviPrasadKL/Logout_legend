@@ -4,6 +4,14 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import ConfirmationDialog from '../UIComponents/ConfirmationDialog';
 import useTotalLoggedInHours from '../CustomHooks/useTotalLoggedInHours';
+import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
+
+const timeOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+};
 
 /**
  * `LogoutAndCalculate` component handles user logout, calculates logged-in duration, 
@@ -32,7 +40,10 @@ export default function LogoutAndCalculate({
     const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
     //Hook to get Total Logged in hours without breaks
-    const {totalLoggedInHours} = useTotalLoggedInHours(loginTime, logoutTime, breaks);
+    const { totalLoggedInHours } = useTotalLoggedInHours(loginTime, logoutTime, breaks);
+
+    // Custom hook to get the event tracking function
+    const { handleEvent } = useOfflineEventTracker();
 
     /**
      * Opens the logout confirmation dialog.
@@ -52,6 +63,23 @@ export default function LogoutAndCalculate({
             setIsLoggedOut(true); // Mark as logged out
             localStorage.setItem('logoutTime', now.toISOString());
             setOpenLogoutDialog(false); // Close dialog after confirmation
+
+            // Get the current date in DD-MM-YYYY format
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const formattedDate = `${day}-${month}-${year}`;
+            
+            //Analytics 
+            const eventData = {
+                category: 'Logout',
+                action: 'Logout',
+                label: 'Logout',
+                value: `${formattedDate} ${now.toLocaleTimeString('en-US', timeOptions)}`
+            };
+
+            // Custom hook's handleEvent function to either track or store events
+            handleEvent(eventData);
         }
         setOpenLogoutDialog(false); // Close dialog after confirmation
     };

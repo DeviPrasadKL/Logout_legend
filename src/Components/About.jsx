@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Typography, Button, Grid, Box, List, ListItem, ListItemText, Divider, Stack } from '@mui/material';
 import { History as HistoryIcon } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
+//For analytics
+import ReactGA from "react-ga4";
+import { useLocation } from 'react-router-dom';
 
 const sentences = [
   "Login Tracker is designed to help you manage your login and break times, allowing you to stay focused on productivity without the hassle of tracking these details manually.",
@@ -48,6 +51,12 @@ const Support = () => (
 
 const About = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Analytics
+  useEffect(() => {
+    ReactGA.send({hitType: "pageview", page: location.pathname + location.search, title: "About" });
+  }, [location]);
 
   return (
     <Box mx={2} mt={1} mb={4}>

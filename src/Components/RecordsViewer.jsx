@@ -5,6 +5,10 @@ import { saveAs } from 'file-saver';
 import DownloadIcon from '@mui/icons-material/Download';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+//For analytics
+import ReactGA from "react-ga4";
+import { useLocation } from 'react-router-dom';
+import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
 
 /**
  * Formats a date object to a string in 'YYYY-MM-DD' format.
@@ -46,6 +50,15 @@ export default function RecordsViewer() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    const location = useLocation();
+    // Custom hook to get the event tracking function
+    const { handleEvent } = useOfflineEventTracker();
+
+    // Analytics
+    useEffect(() => {
+        ReactGA.send({hitType: "pageview", page: location.pathname + location.search, title: "History" });
+    }, [location]);
 
     /**
      * Effect hook to load records from localStorage when the component mounts.
@@ -143,6 +156,17 @@ export default function RecordsViewer() {
 
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), fileName);
+
+        //Analytics 
+        const eventData = {
+            category: 'Download',
+            action: 'Download',
+            label: 'Records Download',
+            value: fileName
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
     };
 
 
