@@ -303,7 +303,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 setExpectedLogoutTime(updatedLogoutTime);
                 localStorage.setItem('expectedLogoutTime', updatedLogoutTime.toISOString());
             }
-
             localStorage.setItem('breaks', JSON.stringify(newBreaks));
         }
     };

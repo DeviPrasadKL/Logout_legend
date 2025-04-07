@@ -13,10 +13,7 @@ export const useOfflineEventTracker = () => {
   const handleEvent = (eventData) => {
     if (navigator.onLine) {
       // Track the event if the user is online
-      ReactGA.event({
-        category: "Offline",
-        action: "User offline"
-      });
+      ReactGA.event(eventData);
     } else {
       // Store the event locally if the user is offline
       storeEventLocally(eventData);
