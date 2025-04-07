@@ -650,7 +650,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                             disabled={!!loginTime}>
                             Login
                         </Stack>
-ˀ
+                        
                         <Button
                             sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}
                             variant="contained"
