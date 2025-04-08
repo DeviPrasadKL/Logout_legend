@@ -697,7 +697,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                                     className='avoidLayoutChange'
                                     sx={{
                                         color: 'white',
-                                        fontSize: '1rem',
+                                        fontSize: '2rem',
                                         textAlign: 'center',
                                     }}
                                 >
