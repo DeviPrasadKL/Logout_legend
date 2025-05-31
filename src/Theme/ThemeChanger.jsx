@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CssBaseline, createTheme, ThemeProvider, useTheme } from '@mui/material';
+import { Box, CssBaseline, createTheme, ThemeProvider, useTheme, Stack, Typography, Button } from '@mui/material';
 import Logout from '../Components/Logout';
 import Navbar from '../UIComponents/Navbar';
 import Sidebar from '../UIComponents/Sidebar';
 import { Route, Routes } from 'react-router-dom';
 import RecordsViewer from '../Components/RecordsViewer';
 import About from '../Components/About';
-
+import ShareIcon from '@mui/icons-material/Share';
 
 /**
  * The `ThemeChanger` component manages and applies theme settings for the application.
@@ -46,22 +46,13 @@ export default function ThemeChanger() {
                 easing: 'ease',
             }),
         },
-        typography:{
+        typography: {
             fontFamily: [
                 'Montserrat',
                 'sans-serif'
             ].join(','),
         }
     });
-
-    /**
-     * Toggles the theme mode between light and dark and stores the new mode in local storage.
-     */
-    const handleThemeToggle = () => {
-        const newMode = !darkMode;
-        setDarkMode(newMode);
-        localStorage.setItem('themeMode', JSON.stringify(newMode));
-    };
 
     useEffect(() => {
         // Apply a CSS transition to the body element for smooth theme changes
@@ -72,31 +63,53 @@ export default function ThemeChanger() {
         };
     }, [darkMode]);
 
+    /**
+     * Toggles the theme mode between light and dark and stores the new mode in local storage.
+     */
+    const handleThemeToggle = () => {
+        const newMode = !darkMode;
+        setDarkMode(newMode);
+        localStorage.setItem('themeMode', JSON.stringify(newMode));
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1,
-                }}
-            >
-                <Navbar onMenuClick={handleMenuClick} darkMode={darkMode} handleThemeToggle={handleThemeToggle} />
-                <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
+            <Stack flexDirection='column' justifyContent='space-between' alignContent='center' height='100vh' >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                    }}
+                >
+                    <Navbar onMenuClick={handleMenuClick} darkMode={darkMode} handleThemeToggle={handleThemeToggle} />
+                    <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
 
-                <Routes>
-                    <Route exact path="/" element={<Logout
-                        darkMode={darkMode}
-                        handleThemeToggle={handleThemeToggle}
-                    />} />
-                    <Route path="/view_history" element={<RecordsViewer />} />
-                    <Route path="/about" element={<About />} />
-                </Routes>
+                    <Routes>
+                        <Route exact path="/Logout_legend" element={<Logout
+                            darkMode={darkMode}
+                            handleThemeToggle={handleThemeToggle}
+                        />} />
+                        <Route path="/view_history" element={<RecordsViewer />} />
+                        <Route path="/about" element={<About />} />
+                    </Routes>
+                </Box>
 
-            </Box>
+                {/* To copy the app link to share with other people  */}
+                <Stack justifyContent='center' alignItems='center' p={2}>
+                    <a href='https://github.com/DeviPrasadKL/Logout_legend' target='_blank' style={{ color: "grey" }}>
+                        <Stack flexDirection='row' justifyContent='center' alignItems='center' gap={1} p={0.5}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <ShareIcon />
+                            <Typography variant='body2'>Share App Link</Typography>
+                        </Stack>
+                    </a>
+                </Stack>
+            </Stack>
         </ThemeProvider>
     );
 }
