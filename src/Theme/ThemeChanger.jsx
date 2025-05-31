@@ -89,7 +89,7 @@ export default function ThemeChanger() {
                     <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
 
                     <Routes>
-                        <Route exact path="/Logout_legend" element={<Logout
+                        <Route exact path="/" element={<Logout
                             darkMode={darkMode}
                             handleThemeToggle={handleThemeToggle}
                         />} />
