@@ -1,39 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CssBaseline, createTheme, ThemeProvider, useTheme, Stack, Typography, Button } from '@mui/material';
-import Logout from '../Components/Logout';
-import Navbar from '../UIComponents/Navbar';
-import Sidebar from '../UIComponents/Sidebar';
-import { Route, Routes } from 'react-router-dom';
-import RecordsViewer from '../Components/RecordsViewer';
-import About from '../Components/About';
+import {
+    CssBaseline,
+    createTheme,
+    ThemeProvider,
+    Stack,
+    Typography,
+} from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { notifyError, notifySuccess } from '../Utils/notify';
+import AppRoutes from '../Router/AppRoutes';
+
 /**
- * The `ThemeChanger` component manages and applies theme settings for the application.
- * It provides a toggle for switching between light and dark mode themes.
+ * `ThemeChanger` is the root component that manages the application's overall theme (light/dark),
+ * layout, and routing. It includes functionality to copy the app link to the clipboard for sharing.
+ * 
+ * Features:
+ * - Theme toggle (light/dark)
+ * - Persistent theme mode via localStorage
+ * - Responsive layout with Navbar and Sidebar
+ * - Clipboard support for sharing app link
  */
 export default function ThemeChanger() {
-
-    /**
-     * Retrieves the initial theme mode from local storage or defaults to light mode.
-     * @returns {boolean} - The theme mode; `true` for dark mode and `false` for light mode.
-     */
     const getInitialMode = () => {
         const savedMode = localStorage.getItem('themeMode');
-        return savedMode ? JSON.parse(savedMode) : false; // false = light mode
+        return savedMode ? JSON.parse(savedMode) : false;
     };
 
-    // State variable to keep track of the current theme mode
     const [darkMode, setDarkMode] = useState(getInitialMode);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const handleMenuClick = () => {
-        setSidebarOpen(true);
+    const handleThemeToggle = () => {
+        const newMode = !darkMode;
+        setDarkMode(newMode);
+        localStorage.setItem('themeMode', JSON.stringify(newMode));
     };
 
-    const handleSidebarClose = () => {
-        setSidebarOpen(false);
+    /**
+     * Handles copying the app link to the user's clipboard with a secure and fallback method.
+     * Shows a toast notification when successful.
+     */
+    const handleCopyLink = () => {
+        const link = 'https://logout-legend.onrender.com/';
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(link)
+                .then(() => notifySuccess('Link copied to clipboard!'))
+                .catch(err => {
+                    console.error('Clipboard write failed:', err);
+                    notifyError('Failed to copy link.');
+                });
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = link;
+            textArea.style.position = "absolute";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                notifySuccess('Link copied to clipboard!');
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                notifyError('Failed to copy link.');
+            }
+
+            document.body.removeChild(textArea);
+        }
     };
+
+    useEffect(() => {
+        const body = document.body;
+        body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+        return () => {
+            body.style.transition = '';
+        };
+    }, [darkMode]);
 
     const theme = createTheme({
         palette: {
@@ -47,67 +92,40 @@ export default function ThemeChanger() {
             }),
         },
         typography: {
-            fontFamily: [
-                'Montserrat',
-                'sans-serif'
-            ].join(','),
+            fontFamily: ['Montserrat', 'sans-serif'].join(','),
         }
     });
-
-    useEffect(() => {
-        // Apply a CSS transition to the body element for smooth theme changes
-        const body = document.body;
-        body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-        return () => {
-            body.style.transition = '';
-        };
-    }, [darkMode]);
-
-    /**
-     * Toggles the theme mode between light and dark and stores the new mode in local storage.
-     */
-    const handleThemeToggle = () => {
-        const newMode = !darkMode;
-        setDarkMode(newMode);
-        localStorage.setItem('themeMode', JSON.stringify(newMode));
-    };
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Stack flexDirection='column' justifyContent='space-between' alignContent='center' height='100vh' >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 1,
-                    }}
+            <ToastContainer position="top-center" autoClose={2000} theme={darkMode ? "dark" : "light"} />
+            <Stack
+                flexDirection='column'
+                justifyContent='space-between'
+                alignContent='center'
+                height='100vh'
+            >
+                {/* All Routes of app */}
+                <AppRoutes
+                    darkMode={darkMode}
+                    handleThemeToggle={handleThemeToggle}
+                    setSidebarOpen={setSidebarOpen}
+                    sidebarOpen={sidebarOpen}
+                />
+
+                {/* Footer with Share link and attribution */}
+                <Stack
+                    flexDirection="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    gap={1}
+                    p={1}
+                    sx={{ cursor: 'pointer', color: 'grey' }}
+                    onClick={handleCopyLink}
                 >
-                    <Navbar onMenuClick={handleMenuClick} darkMode={darkMode} handleThemeToggle={handleThemeToggle} />
-                    <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
-
-                    <Routes>
-                        <Route exact path="/" element={<Logout
-                            darkMode={darkMode}
-                            handleThemeToggle={handleThemeToggle}
-                        />} />
-                        <Route path="/view_history" element={<RecordsViewer />} />
-                        <Route path="/about" element={<About />} />
-                    </Routes>
-                </Box>
-
-                {/* To copy the app link to share with other people  */}
-                <Stack justifyContent='center' alignItems='center' p={2}>
-                    <a href='https://github.com/DeviPrasadKL/Logout_legend' target='_blank' style={{ color: "grey" }}>
-                        <Stack flexDirection='row' justifyContent='center' alignItems='center' gap={1} p={0.5}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <ShareIcon />
-                            <Typography variant='body2'>Share App Link</Typography>
-                        </Stack>
-                    </a>
+                    <ShareIcon />
+                    <Typography variant="body2">Share App Link</Typography>
                 </Stack>
             </Stack>
         </ThemeProvider>
