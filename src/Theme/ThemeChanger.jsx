@@ -39,37 +39,18 @@ export default function ThemeChanger() {
     };
 
     /**
-     * Handles copying the app link to the user's clipboard with a secure and fallback method.
-     * Shows a toast notification when successful.
+     * Shares a predefined message and app link via WhatsApp.
+     * Opens WhatsApp Web or the WhatsApp app with a pre-filled message,
+     * allowing the user to share the app link easily.
      */
-    const handleCopyLink = () => {
+    const handleShareViaWhatsApp = () => {
         const link = 'https://logout-legend.onrender.com/';
+        const message = `Hey! Checkout this amazing login tracker app.\n\nYou can install it like a normal app on both Android and iOS 📱\n\nHere's the link: ${link}`;
+        const encodedMessage = encodeURIComponent(message);
 
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(link)
-                .then(() => notifySuccess('Link copied to clipboard!'))
-                .catch(err => {
-                    console.error('Clipboard write failed:', err);
-                    notifyError('Failed to copy link.');
-                });
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = link;
-            textArea.style.position = "absolute";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
+        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
 
-            try {
-                document.execCommand('copy');
-                notifySuccess('Link copied to clipboard!');
-            } catch (err) {
-                console.error('Fallback copy failed:', err);
-                notifyError('Failed to copy link.');
-            }
-
-            document.body.removeChild(textArea);
-        }
+        window.open(whatsappUrl, '_blank');
     };
 
     useEffect(() => {
@@ -122,7 +103,7 @@ export default function ThemeChanger() {
                     gap={1}
                     p={1}
                     sx={{ cursor: 'pointer', color: 'grey' }}
-                    onClick={handleCopyLink}
+                    onClick={handleShareViaWhatsApp}
                 >
                     <ShareIcon />
                     <Typography variant="body2">Share App Link</Typography>
