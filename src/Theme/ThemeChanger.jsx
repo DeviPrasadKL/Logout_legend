@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { notifyError, notifySuccess } from '../Utils/notify';
 import AppRoutes from '../Router/AppRoutes';
+import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
 
 /**
  * `ThemeChanger` is the root component that manages the application's overall theme (light/dark),
@@ -31,6 +32,8 @@ export default function ThemeChanger() {
 
     const [darkMode, setDarkMode] = useState(getInitialMode);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    // Custom hook to get the event tracking function
+    const { handleEvent } = useOfflineEventTracker();
 
     useEffect(() => {
         const body = document.body;
@@ -98,6 +101,15 @@ export default function ThemeChanger() {
 
             document.body.removeChild(textArea);
         }
+        //Analytics 
+        const eventData = {
+            category: 'Share',
+            action: 'Share App Link',
+            label: 'Copy App Link',
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
     };
 
     /**
@@ -106,6 +118,15 @@ export default function ThemeChanger() {
      * information about the app and its installation instructions.
      */
     const handleShareViaWhatsApp = () => {
+        //Analytics 
+        const eventData = {
+            category: 'Share',
+            action: 'Share App Link via WhatsApp',
+            label: 'Copy App Link via WhatsApp',
+        };
+
+        // Custom hook's handleEvent function to either track or store events
+        handleEvent(eventData);
         const link = 'https://logout-legend.onrender.com/';
         const message = `Hey! Checkout this amazing login tracker app.\n\nYou can install it like a normal app on both Android and iOS 📱\n\nHere's the link: ${link}`;
         const encodedMessage = encodeURIComponent(message);
