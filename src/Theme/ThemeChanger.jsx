@@ -4,15 +4,11 @@ import {
     createTheme,
     ThemeProvider,
     Stack,
-    Typography,
 } from '@mui/material';
-import ShareIcon from '@mui/icons-material/Share';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { notifyError, notifySuccess } from '../Utils/notify';
 import AppRoutes from '../Router/AppRoutes';
-import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
+import ShareApp from '../Components/ShareApp';
 
 /**
  * `ThemeChanger` is the root component that manages the application's overall theme (light/dark),
@@ -32,8 +28,6 @@ export default function ThemeChanger() {
 
     const [darkMode, setDarkMode] = useState(getInitialMode);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    // Custom hook to get the event tracking function
-    const { handleEvent } = useOfflineEventTracker();
 
     useEffect(() => {
         const body = document.body;
@@ -69,71 +63,6 @@ export default function ThemeChanger() {
         localStorage.setItem('themeMode', JSON.stringify(newMode));
     };
 
-    /**
-     * Handles copying the app link to the user's clipboard with a secure and fallback method.
-     * Shows a toast notification when successful.
-     */
-    const handleCopyLink = () => {
-        const link = 'https://logout-legend.onrender.com/';
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(link)
-                .then(() => notifySuccess('Link copied to clipboard!'))
-                .catch(err => {
-                    console.error('Clipboard write failed:', err);
-                    notifyError('Failed to copy link.');
-                });
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = link;
-            textArea.style.position = "absolute";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-
-            try {
-                document.execCommand('copy');
-                notifySuccess('Link copied to clipboard!');
-            } catch (err) {
-                console.error('Fallback copy failed:', err);
-                notifyError('Failed to copy link.');
-            }
-
-            document.body.removeChild(textArea);
-        }
-        //Analytics 
-        const eventData = {
-            category: 'Share',
-            action: 'Share App Link',
-            label: 'Copy App Link',
-        };
-
-        // Custom hook's handleEvent function to either track or store events
-        handleEvent(eventData);
-    };
-
-    /**
-     * Shares the app link and a custom message via WhatsApp.
-     * Opens WhatsApp in a new browser tab with a pre-filled message containing
-     * information about the app and its installation instructions.
-     */
-    const handleShareViaWhatsApp = () => {
-        //Analytics 
-        const eventData = {
-            category: 'Share',
-            action: 'Share App Link via WhatsApp',
-            label: 'Copy App Link via WhatsApp',
-        };
-
-        // Custom hook's handleEvent function to either track or store events
-        handleEvent(eventData);
-        const link = 'https://logout-legend.onrender.com/';
-        const message = `Hey! Checkout this amazing login tracker app.\n\nYou can install it like a normal app on both Android and iOS 📱\n\nHere's the link: ${link}`;
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-    };
-
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
@@ -151,41 +80,8 @@ export default function ThemeChanger() {
                     setSidebarOpen={setSidebarOpen}
                     sidebarOpen={sidebarOpen}
                 />
-
-                {/* Footer with Share link and attribution */}
-                <Stack
-                    flexDirection="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={3}
-                    p={1}
-                    pb={2}
-                    sx={{ color: 'grey' }}
-                >
-                    {/* Copy to Clipboard */}
-                    <Stack
-                        flexDirection="row"
-                        alignItems="center"
-                        gap={1}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={handleCopyLink}
-                    >
-                        <ShareIcon />
-                        <Typography variant="body2">Copy App Link</Typography>
-                    </Stack>
-
-                    {/* Share via WhatsApp */}
-                    <Stack
-                        flexDirection="row"
-                        alignItems="center"
-                        gap={1}
-                        sx={{ cursor: 'pointer' }}
-                        onClick={handleShareViaWhatsApp}
-                    >
-                        <WhatsAppIcon />
-                        <Typography variant="body2">Share via WhatsApp</Typography>
-                    </Stack>
-                </Stack>
+                {/* Share the app */}
+                <ShareApp/>
             </Stack>
         </ThemeProvider>
     );
