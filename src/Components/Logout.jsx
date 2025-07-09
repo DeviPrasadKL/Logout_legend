@@ -718,6 +718,17 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                 }
             </Stack>
 
+            <Stack justifyContent='center' alignItems='center' py={1}>
+                {loginTime && (
+                    <PieClock
+                        effectiveLoginTime={effectiveLoginTime}
+                        loginTime={loginTime}
+                        loginHours={{ weekday: 8, saturday: 5 }}
+                        displayText={effectiveLoginTime}
+                    />
+                )}
+            </Stack>
+
             {breaks.length !== 0 && (
                 <BreaksTable
                     breaks={breaks}
@@ -745,17 +756,6 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                     </Button>
                 </Stack>
             )}
-
-            <Stack justifyContent='center' alignItems='center' mt={2}>
-                {loginTime && (
-                    <PieClock
-                        effectiveLoginTime={effectiveLoginTime}
-                        loginTime={loginTime}
-                        loginHours={{ weekday: 8, saturday: 5 }}
-                        displayText={effectiveLoginTime}
-                    />
-                )}
-            </Stack>
 
             {loginTime &&
                 <Stack pb={2}>
