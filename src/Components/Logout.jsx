@@ -17,6 +17,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import ReactGA from "react-ga4";
 import { useLocation } from 'react-router-dom';
 import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
+import PieClock from './PieClock';
 
 /**
  * A component for which renders all the other main componennts inside with all the logic.
@@ -101,7 +102,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
     //For analytics 
     useEffect(() => {
-        ReactGA.send({hitType: "pageview", page: location.pathname + location.search, title: "Homescreen" });
+        ReactGA.send({ hitType: "pageview", page: location.pathname + location.search, title: "Homescreen" });
     }, [location]);
 
     useEffect(() => {
@@ -158,15 +159,19 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
     /**
      * Formats the effective login time from seconds into a string showing hours, minutes, and seconds.
-     * 
+     * Shows negative time as well, with a '-' prefix if seconds is negative.
+     *
      * @param {number} seconds - The total number of seconds to format.
-     * @returns {string} - A string representing the time in "hh:mm:ss" format.
+     * @returns {string} - A string representing the time in "hh:mm:ss" format, with '-' if negative.
      */
     const EffectiveHoursFormatTime = (seconds) => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${hours.toString().padStart(2, '0')}h  ${minutes.toString().padStart(2, '0')}m  ${secs.toString().padStart(2, '0')}s`;
+        const isNegative = seconds < 0;
+        const absSeconds = Math.abs(seconds);
+        const hours = Math.floor(absSeconds / 3600);
+        const minutes = Math.floor((absSeconds % 3600) / 60);
+        const secs = Math.floor(absSeconds % 60);
+        const prefix = isNegative ? '-' : '';
+        return `${prefix}${hours.toString().padStart(2, '0')}h  ${minutes.toString().padStart(2, '0')}m  ${secs.toString().padStart(2, '0')}s`;
     };
 
     /**Function close Record exists dialouge */
@@ -650,7 +655,7 @@ export default function Logout({ darkMode, handleThemeToggle }) {
                             disabled={!!loginTime}>
                             Login
                         </Stack>
-                        
+
                         <Button
                             sx={{ display: !loginTime || isBreakInProgress ? 'none' : 'block', height: '8rem', width: '12rem', borderRadius: '8%' }}
                             variant="contained"
@@ -743,9 +748,12 @@ export default function Logout({ darkMode, handleThemeToggle }) {
 
             <Stack justifyContent='center' alignItems='center' mt={2}>
                 {loginTime && (
-                    <Typography variant="p" className='avoidLayoutChange'>
-                        Effective Login Hours: {effectiveLoginTime}
-                    </Typography>
+                    <PieClock
+                        effectiveLoginTime={effectiveLoginTime}
+                        loginTime={loginTime}
+                        loginHours={{ weekday: 8, saturday: 5 }}
+                        displayText={effectiveLoginTime}
+                    />
                 )}
             </Stack>
 
