@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Paper, Stack, Typography } from '@mui/material';
+import { green, red } from '@mui/material/colors';
 
 export default function PieClock({ effectiveLoginTime, loginTime, loginHours, displayText }) {
     const theme = useTheme();
@@ -29,15 +30,16 @@ export default function PieClock({ effectiveLoginTime, loginTime, loginHours, di
     const stroke = 10;
     const normalizedRadius = radius - stroke / 2;
     const circumference = 2 * Math.PI * normalizedRadius;
-    const percent = Math.min(effectiveSeconds / maxSeconds, 1);
+    const percent = Math.min(effectiveSeconds / maxSeconds);
     const strokeDashoffset = circumference * (1 - percent);
+    const overallPercentage = Math.floor(percent * 100);
 
     const secondsInMinute = effectiveSeconds % 60;
     const secondsAngle = (secondsInMinute / 60) * 360;
 
     const backgroundFill = theme.palette.background.paper || '#f5f5f5';
-    const trackStroke = theme.palette.action.disabledBackground || '#e0e0e0';
-    const progressStroke = theme.palette.primary.main;
+    const trackStroke = overallPercentage >= 100 ? red[400] : theme.palette.action.disabledBackground || '#e0e0e0';
+    const progressStroke = overallPercentage >= 100 ? green[400] : theme.palette.primary.main;
     const secondsHandColor = theme.palette.secondary.main || '#f50057';
 
     const secondsHandLength = radius * 0.75;
@@ -62,6 +64,16 @@ export default function PieClock({ effectiveLoginTime, loginTime, loginHours, di
                     }}
                 >
                     {displayText}
+                </Typography>
+
+                {/* Percentage */}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        userSelect: 'none',
+                    }}
+                >
+                    {overallPercentage}%
                 </Typography>
             </Stack>
 
