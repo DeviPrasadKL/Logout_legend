@@ -158,6 +158,14 @@ export default function ShareApp() {
                                 startIcon={<WhatsAppIcon />}
                                 onClick={handleShareViaWhatsApp}
                                 fullWidth
+                                sx={{
+                                    borderColor: 'success.main',
+                                    color: 'success.main',
+                                    '&:hover': {
+                                        backgroundColor: 'success.light',
+                                        color: 'success.contrastText',
+                                    },
+                                }}
                             >
                                 Share via WhatsApp
                             </Button>
