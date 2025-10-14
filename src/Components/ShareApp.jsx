@@ -183,13 +183,25 @@ export default function ShareApp() {
                     )}
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions
+                    sx={{
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 1,
+                        pb: 2,
+                    }}
+                >
                     {showQR ? (
                         <Button onClick={() => setShowQR(false)}>Back</Button>
                     ) : (
                         <Button onClick={handleClose}>Close</Button>
                     )}
+                    <Typography variant="caption" color="text.secondary">
+                        Crafted with ❤️ by Deviprasad
+                    </Typography>
                 </DialogActions>
+
             </Dialog>
         </div>
     );

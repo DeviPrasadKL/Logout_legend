@@ -86,8 +86,8 @@ const Sidebar = ({ open, onClose }) => {
             <Divider />
           </List>
           <Stack alignItems='center' pb={2}>
-            <Typography>
-              App by Deviprasad
+            <Typography variant='body2'>
+              Crafted with ❤️ by Deviprasad
             </Typography>
           </Stack>
         </Stack>
