@@ -18,6 +18,7 @@ import ReactGA from "react-ga4";
 import { useLocation } from 'react-router-dom';
 import { useOfflineEventTracker } from '../CustomHooks/useOfflineEventTracker';
 import PieClock from './PieClock';
+import { notifyWarn } from '../Utils/notify';
 
 /**
  * A component for which renders all the other main componennts inside with all the logic.
@@ -388,9 +389,15 @@ export default function Logout({ darkMode, handleThemeToggle }) {
      * Adds a manual break with a specified duration and updates the list of breaks and expected logout time.
      */
     const handleAddManualBreak = () => {
+
+        if (manualBreakDuration > 180) {
+            notifyWarn("Manual break duration cannot exceed 180 minutes.");
+            return;
+        }
+
         const minutes = parseInt(manualBreakDuration, 10);
         if (isNaN(minutes) || minutes <= 0) {
-            alert("Please enter a valid number of minutes.");
+            notifyWarn("Please enter a valid number of minutes.");
             return;
         }
 
@@ -742,10 +749,15 @@ export default function Logout({ darkMode, handleThemeToggle }) {
             {showAddBreakManually && (
                 <Stack direction="row" spacing={2} style={{ marginTop: 20 }}>
                     <TextField
-                        label="Add Break Time (minutes)"
+                        label="Break (minutes, max 180)"
                         type="number"
                         value={manualBreakDuration}
-                        onChange={(e) => setManualBreakDuration(e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (value.length <= 3 && !isNaN(value)) {
+                                setManualBreakDuration(value);
+                            }
+                        }}
                         inputProps={{ min: 0 }}
                     />
                     <Button variant="contained" color="primary"
